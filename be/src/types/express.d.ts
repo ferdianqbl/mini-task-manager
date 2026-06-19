@@ -1,12 +1,7 @@
-import { RowDataPacket } from 'mysql2';
+import { JWTPayload } from '../modules/auth/auth.types';
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        id: number;
-        email: string;
-      };
-    }
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: JWTPayload;
   }
 }
