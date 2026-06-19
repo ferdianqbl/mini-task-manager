@@ -1,5 +1,7 @@
 "use client";
 
+import { TaskStatus } from "../../../services/task/types";
+import { useGlobalAuditLogs } from "../../../services/task/use-tasks";
 import {
   AlertCircle,
   ArrowRight,
@@ -9,8 +11,6 @@ import {
   User,
 } from "lucide-react";
 import { useState } from "react";
-import { TaskStatus } from "../../../services/task/types";
-import { useGlobalAuditLogs } from "../../../services/task/use-tasks";
 
 const statusLabels: Record<TaskStatus, string> = {
   to_do: "To Do",
@@ -148,7 +148,7 @@ export default function GlobalAuditLogs() {
                 return (
                   <tr
                     key={log.id}
-                    className="hover:bg-white/[0.01] transition duration-150"
+                    className="hover:bg-white/1 transition duration-150"
                   >
                     {/* Timestamp */}
                     <td className="p-4 whitespace-nowrap text-text-secondary font-mono text-[11px]">

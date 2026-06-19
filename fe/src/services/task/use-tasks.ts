@@ -1,18 +1,21 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "sonner";
-import api from "../../lib/api";
-import { ApiResponse } from "../types";
 import { AuditLog, CreateTaskDTO, Task, TaskStatus } from "./types";
+import {
+  listTasksAPI,
+  createTaskAPI,
+  updateTaskStatusAPI,
+  deleteTaskAPI,
+  getTaskAuditLogsAPI,
+  getGlobalAuditLogsAPI,
+} from "./task.service";
 
 // Fetch all tasks
 export function useTasks() {
-  return useQuery<Task[]>({
+  return useQuery<Task[], Error, Task[]>({
     queryKey: ["tasks"],
-    queryFn: async () => {
-      const res = await api.get<ApiResponse<Task[]>>("/api/tasks");
-      return res.data.data;
-    },
+    queryFn: () => listTasksAPI(),
   });
 }
 
@@ -20,10 +23,7 @@ export function useTasks() {
 export function useCreateTask() {
   const queryClient = useQueryClient();
   return useMutation<Task, Error, CreateTaskDTO>({
-    mutationFn: async (dto) => {
-      const res = await api.post<ApiResponse<Task>>("/api/tasks", dto);
-      return res.data.data;
-    },
+    mutationFn: (dto) => createTaskAPI(dto),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
       queryClient.invalidateQueries({ queryKey: ["global-audit-logs"] });
@@ -42,12 +42,7 @@ export function useCreateTask() {
 export function useUpdateTaskStatus() {
   const queryClient = useQueryClient();
   return useMutation<Task, Error, { id: number; status: TaskStatus }>({
-    mutationFn: async ({ id, status }) => {
-      const res = await api.put<ApiResponse<Task>>(`/api/tasks/${id}/status`, {
-        status,
-      });
-      return res.data.data;
-    },
+    mutationFn: ({ id, status }) => updateTaskStatusAPI(id, status),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
       queryClient.invalidateQueries({ queryKey: ["task-audit-logs", data.id] });
@@ -67,10 +62,7 @@ export function useUpdateTaskStatus() {
 export function useDeleteTask() {
   const queryClient = useQueryClient();
   return useMutation<number, Error, number>({
-    mutationFn: async (id) => {
-      await api.delete<ApiResponse<{ id: number }>>(`/api/tasks/${id}`);
-      return id;
-    },
+    mutationFn: (id) => deleteTaskAPI(id),
     onSuccess: (id) => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
       queryClient.invalidateQueries({ queryKey: ["task-audit-logs", id] });
@@ -88,28 +80,18 @@ export function useDeleteTask() {
 
 // Fetch task-specific audit logs
 export function useTaskAuditLogs(taskId: number, enabled = true) {
-  return useQuery<AuditLog[]>({
+  return useQuery<AuditLog[], Error, AuditLog[]>({
     queryKey: ["task-audit-logs", taskId],
-    queryFn: async () => {
-      const res = await api.get<ApiResponse<AuditLog[]>>(
-        `/api/tasks/${taskId}/audit-logs`,
-      );
-      return res.data.data;
-    },
+    queryFn: () => getTaskAuditLogsAPI(taskId),
     enabled: !!taskId && enabled,
   });
 }
 
 // Fetch global system audit logs (ADMIN only)
 export function useGlobalAuditLogs(enabled = true) {
-  return useQuery<AuditLog[]>({
+  return useQuery<AuditLog[], Error, AuditLog[]>({
     queryKey: ["global-audit-logs"],
-    queryFn: async () => {
-      const res = await api.get<ApiResponse<AuditLog[]>>(
-        "/api/tasks/global-audit-logs",
-      );
-      return res.data.data;
-    },
+    queryFn: () => getGlobalAuditLogsAPI(),
     enabled,
   });
 }

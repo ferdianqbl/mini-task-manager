@@ -1,15 +1,14 @@
 "use client";
 
 import { Activity, CheckSquare, Columns, LogOut, Plus } from "lucide-react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import GlobalAuditLogs from "../components/features/tasks/global-audit-logs";
 import TaskAuditLogs from "../components/features/tasks/task-audit-logs";
 import TaskBoard from "../components/features/tasks/task-board";
 import TaskDialog from "../components/features/tasks/task-dialog";
-import { useAuth } from "../store/auth-store";
 import { useTasks } from "../services/task/use-tasks";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useAuth } from "../store/auth-store";
 
 export default function DashboardPage() {
   const { user, logout, isLoading: isAuthLoading, loadUser } = useAuth();
@@ -65,10 +64,10 @@ export default function DashboardPage() {
       <header className="border-b border-border bg-[#0B0F19]/80 backdrop-blur-md sticky top-0 z-40 w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
-            <div className="p-1.5 rounded-lg bg-gradient-to-br from-primary to-cyan-500 shadow-md shadow-primary/20">
+            <div className="p-1.5 rounded-lg bg-linear-to-br from-primary to-cyan-500 shadow-md shadow-primary/20">
               <CheckSquare className="h-5 w-5 text-[#090D16] fill-current" />
             </div>
-            <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+            <span className="text-xl font-bold tracking-tight bg-linear-to-r from-white to-gray-300 bg-clip-text text-transparent">
               Mini Task Manager
             </span>
           </div>

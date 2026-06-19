@@ -1,13 +1,8 @@
 import { create } from 'zustand';
 import axios from 'axios';
-import api from '../lib/api';
 import { toast } from 'sonner';
-
-export interface User {
-  id: number;
-  username: string;
-  role: 'ADMIN' | 'USER';
-}
+import { User } from '../services/types';
+import { loginAPI, registerAPI, logoutAPI, getMeAPI } from '../services/auth';
 
 interface AuthState {
   user: User | null;
@@ -24,8 +19,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   login: async (username, password) => {
     try {
-      const res = await api.post('/api/auth/login', { username, password });
-      const { user: userProfile } = res.data.data;
+      const userProfile = await loginAPI(username, password);
       set({ user: userProfile });
       toast.success('Welcome back!', {
         description: `Signed in as ${userProfile.username}`,
@@ -41,8 +35,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   register: async (username, password) => {
     try {
-      const res = await api.post('/api/auth/register', { username, password });
-      const { user: userProfile } = res.data.data;
+      const userProfile = await registerAPI(username, password);
       set({ user: userProfile });
       toast.success('Account created!', {
         description: 'Welcome to Mini Task Manager. Start managing your tasks!',
@@ -58,7 +51,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   logout: async () => {
     try {
-      await api.post('/api/auth/logout');
+      await logoutAPI();
     } catch (err) {
       console.error('Logout failed on backend:', err);
     }
@@ -68,8 +61,8 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   loadUser: async () => {
     try {
-      const res = await api.get('/api/users/me');
-      set({ user: res.data.data.user });
+      const userProfile = await getMeAPI();
+      set({ user: userProfile });
     } catch (err) {
       console.error('Session verification failed:', err);
       set({ user: null });

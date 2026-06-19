@@ -36,7 +36,7 @@ export default function TaskDialog({ isOpen, onClose }: TaskDialogProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
       <div
-        className="w-full max-w-md bg-[#0F172A] border border-border rounded-xl shadow-2xl p-6 relative overflow-hidden"
+        className="w-full max-w-md bg-popover border border-border rounded-xl shadow-2xl p-6 relative overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Glow accent */}

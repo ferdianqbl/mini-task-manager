@@ -2,10 +2,9 @@
 
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
-import { useAuth } from "../../../store/auth-store";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../../../store/auth-store";
 
 export default function LoginForm() {
   const { login, user, isLoading } = useAuth();
@@ -37,7 +36,7 @@ export default function LoginForm() {
   return (
     <div className="w-full max-w-md bg-card border border-border p-8 rounded-lg shadow-xl backdrop-blur-md">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+        <h1 className="text-3xl font-extrabold tracking-tight bg-linear-to-r from-white to-gray-400 bg-clip-text text-transparent">
           Welcome Back
         </h1>
         <p className="text-sm text-text-secondary mt-2">
@@ -56,7 +55,7 @@ export default function LoginForm() {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Enter your username"
-            className="w-full px-4 py-3 bg-[#0F172A]/50 border border-border rounded-md text-foreground placeholder:text-gray-600 focus:outline-none focus:border-primary transition"
+            className="w-full px-4 py-3 bg-popover/50 border border-border rounded-md text-foreground placeholder:text-gray-600 focus:outline-none focus:border-primary transition"
           />
         </div>
 
@@ -71,7 +70,7 @@ export default function LoginForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full px-4 py-3 pr-12 bg-[#0F172A]/50 border border-border rounded-md text-foreground placeholder:text-gray-600 focus:outline-none focus:border-primary transition"
+              className="w-full px-4 py-3 pr-12 bg-popover/50 border border-border rounded-md text-foreground placeholder:text-gray-600 focus:outline-none focus:border-primary transition"
             />
             <button
               type="button"

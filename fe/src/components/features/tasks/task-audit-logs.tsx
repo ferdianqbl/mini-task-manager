@@ -1,8 +1,8 @@
 "use client";
 
-import { ArrowRight, Calendar, User, X } from "lucide-react";
 import { TaskStatus } from "../../../services/task/types";
 import { useTaskAuditLogs } from "../../../services/task/use-tasks";
+import { ArrowRight, Calendar, User, X } from "lucide-react";
 
 interface TaskAuditLogsProps {
   taskId: number;
@@ -46,9 +46,9 @@ export default function TaskAuditLogs({
   };
 
   return (
-    <div className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-[#0F172A] border-l border-border shadow-2xl flex flex-col animate-slide-in">
+    <div className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-popover border-l border-border shadow-2xl flex flex-col animate-slide-in">
       {/* Glow accent */}
-      <div className="absolute top-[20%] right-[-50%] w-[100%] h-[100%] rounded-full bg-cyan-500/5 blur-[120px] pointer-events-none" />
+      <div className="absolute top-[20%] right-[-50%] w-full h-full rounded-full bg-cyan-500/5 blur-[120px] pointer-events-none" />
 
       {/* Header */}
       <div className="p-6 border-b border-border flex items-center justify-between relative z-10">
@@ -93,7 +93,7 @@ export default function TaskAuditLogs({
               return (
                 <div key={log.id} className="relative">
                   {/* Timeline point */}
-                  <span className="absolute -left-[31px] top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#090D16] border-2 border-primary">
+                  <span className="absolute left-[-31px] top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#090D16] border-2 border-primary">
                     <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                   </span>
 

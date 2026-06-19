@@ -2,11 +2,10 @@
 
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "../../../store/auth-store";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export default function RegisterForm() {
   const { register, user, isLoading } = useAuth();
@@ -52,7 +51,7 @@ export default function RegisterForm() {
   return (
     <div className="w-full max-w-md bg-card border border-border p-8 rounded-lg shadow-xl backdrop-blur-md">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+        <h1 className="text-3xl font-extrabold tracking-tight bg-linear-to-r from-white to-gray-400 bg-clip-text text-transparent">
           Create Account
         </h1>
         <p className="text-sm text-text-secondary mt-2">
@@ -71,7 +70,7 @@ export default function RegisterForm() {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Choose a username"
-            className="w-full px-4 py-3 bg-[#0F172A]/50 border border-border rounded-md text-foreground placeholder:text-gray-600 focus:outline-none focus:border-primary transition"
+            className="w-full px-4 py-3 bg-popover/50 border border-border rounded-md text-foreground placeholder:text-gray-600 focus:outline-none focus:border-primary transition"
           />
         </div>
 
@@ -86,7 +85,7 @@ export default function RegisterForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full px-4 py-3 pr-12 bg-[#0F172A]/50 border border-border rounded-md text-foreground placeholder:text-gray-600 focus:outline-none focus:border-primary transition"
+              className="w-full px-4 py-3 pr-12 bg-popover/50 border border-border rounded-md text-foreground placeholder:text-gray-600 focus:outline-none focus:border-primary transition"
             />
             <button
               type="button"
@@ -114,7 +113,7 @@ export default function RegisterForm() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full px-4 py-3 pr-12 bg-[#0F172A]/50 border border-border rounded-md text-foreground placeholder:text-gray-600 focus:outline-none focus:border-primary transition"
+              className="w-full px-4 py-3 pr-12 bg-popover/50 border border-border rounded-md text-foreground placeholder:text-gray-600 focus:outline-none focus:border-primary transition"
             />
             <button
               type="button"
