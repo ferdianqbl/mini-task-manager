@@ -11,13 +11,14 @@ In internal team settings, tasks frequently change status, but it is often uncle
 5.  **Role-Based Access & Visibility**:
     *   Standard `USER` accounts can only manage tasks they created and see their own log entries ("self log") for those tasks.
     *   `ADMIN` accounts can manage all tasks in the system, view all log entries by any user, and view a centralized global audit feed.
+6.  **Secure Session Management**: Authentication utilizes secure **HttpOnly cookies** to protect sessions against XSS and token theft.
 
 ---
 
 ## 2. Core User Journeys
 
-*   **Authentication (Register, Login, Logout)**: Users sign up with a username and password (role defaults to `USER`). JWT-based sessions carry the user's role payload.
-*   **User Task Board**: Standard `USER` accounts can create tasks, transition statuses sequentially, delete their tasks, and view logs of their tasks. However, standard users are restricted to only seeing their own log entries (their own actions).
+*   **Authentication (Register, Login, Logout)**: Users sign up with a username and password (role defaults to `USER`). JWT-based sessions are written by the backend inside an HttpOnly cookie. Logout clears the cookie.
+*   **User Task Board**: Standard `USER` accounts can create tasks, transition statuses sequentially, delete their tasks, and view logs of their tasks. Standard users are restricted to only seeing their own log entries.
 *   **Admin Overseer Board**: Users with the `ADMIN` role see **all tasks** created by all users on their dashboard, can transition or delete any task, and view **all audit logs** from all users.
 *   **Admin Global Audit Feed**: Users with the `ADMIN` role can access a "Global Logs" view displaying a chronological stream of all status changes across the entire system.
 
@@ -28,6 +29,7 @@ In internal team settings, tasks frequently change status, but it is often uncle
 ### User & Role Management
 *   **User Registration**: Sign up with username and password (defaults to `USER` role).
 *   **Role Identification**: Users have either a `USER` or `ADMIN` role.
+*   **Cookie Security**: The JWT token is sent as a `Set-Cookie` header (`HttpOnly`, `SameSite=Lax`, `Secure` in production). JavaScript running on the frontend cannot access it.
 
 ### Task Management
 *   **Create Task**: Initial status is `to_do`, owned by the creator (`user_id`).

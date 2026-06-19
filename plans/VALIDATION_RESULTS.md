@@ -10,6 +10,7 @@ This document lists the validation rules and verification checkpoints for the **
 | :--- | :--- | :--- | :--- |
 | **Authentication** | Secure registration & login via username and password | `auth.routes.ts` | `login-form.tsx`, `register-form.tsx` |
 | **Authentication** | JWT-based session authorization for API queries | `auth.middleware.ts` | `api.ts`, `auth-context.tsx` |
+| **Session Security** | Session token stored in XSS-proof `HttpOnly` Cookies | `auth.controller.ts` | `api.ts` (withCredentials) |
 | **Role Management** | User roles (`USER` and `ADMIN`) specified in JWT token | `auth.controller.ts` | `auth-context.tsx` |
 | **Role Management** | Global Audit Logs fetch blocked for standard users (returns `403 Forbidden`) | `auth.middleware.ts` | `use-tasks.ts` |
 | **Role Management** | Global Audit Logs fetch permitted for administrators | `auth.middleware.ts` | `global-audit-logs.tsx` |
@@ -59,3 +60,4 @@ This document lists the validation rules and verification checkpoints for the **
 3.  **Concurrency & Security Safety**:
     *   Backend employs `SELECT ... FOR UPDATE` within transactions, preventing race conditions where multiple users try to transition a task concurrently.
     *   Backend validates user identity and checks for `role === 'ADMIN'` before executing global log requests, returning a `403 Forbidden` response in case of mismatch.
+    *   JWT Session token is set via `Set-Cookie` with `HttpOnly`, `SameSite=Lax`, and `Secure` (production only) flags to prevent XSS-based session highjacks.

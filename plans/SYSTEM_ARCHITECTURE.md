@@ -13,16 +13,17 @@ This document breaks down the technology stack, library details, folder structur
     *   `@tanstack/react-query` — Client caching and API state synchronization.
     *   `@radix-ui/react-dialog` — Accessible centered modal overlays for viewing task-specific and global audit logs.
     *   `sonner` — Lightweight confirmation and error toast notifications.
-    *   `axios` — Promise-based HTTP client. Features an interceptor to automatically attach JWT header from `localStorage`.
+    *   `axios` — Promise-based HTTP client. Configured with `withCredentials: true` to automatically send the HttpOnly JWT session cookie on every request.
     *   `lucide-react` — Accessible vector SVG icons (e.g. `ClipboardList`, `CheckCircle`, `Calendar`, `History`, `User`, `LogIn`, `LogOut`, `Database`).
 
 ### B. Backend Service (`be/`)
 *   **Runtime**: **Node.js** with **Express** & **TypeScript** - Binds to port `5001`.
 *   **Libraries**:
     *   `mysql2` — High-performance MySQL client supporting pool connections and transactions.
+    *   `cookie-parser` — Middleware to parse Cookie headers and populate `req.cookies`.
     *   `jsonwebtoken` — Signature verification of sessions inside authorization middleware.
     *   `bcryptjs` — Blowfish password hashing for safe user profile creation.
-    *   `cors` — Standard middleware enabling safe requests from the frontend origin.
+    *   `cors` — Standard middleware permitting cross-origin request credentials.
     *   `dotenv` — Configuration manager mapping environment variables.
     *   `ts-node-dev` — Dev-mode hot reloader.
 
@@ -60,7 +61,7 @@ fe/
     ├── context/
     │   └── auth-context.tsx  # Coordinates user login/registration tokens and role
     ├── lib/
-    │   ├── api.ts            # Axios configuration & JWT headers injector interceptor
+    │   ├── api.ts            # Axios configuration with withCredentials: true
     │   └── utils.ts          # Merging Tailwind classes
     └── services/
         └── task/             # Task API queries and React Query hooks
@@ -123,7 +124,5 @@ Orchestrated using `compose.yml` on a shared bridge network (`task-manager-netwo
              │ (healthcheck check)  │                      │
              └──────────────────────┴──────────────────────┘
 ```
-*   **Data Integrity & Filters**: 
-    *   The backend enforces task query restrictions inside `task.repository.ts`.
-    *   Queries for standard users (`USER` role) append `WHERE tasks.user_id = ?` for tasks and `WHERE actor = ?` for audit logs.
-    *   `ADMIN` queries bypass these clauses.
+*   **Credentials Sharing**:
+    *   The `CORS` setup on the backend allows cross-origin requests specifically requesting credential sharing (`credentials: true` and `origin: 'http://localhost:3000'`).

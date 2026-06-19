@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 - [ ] **Step 1: Setup Workspace scaffolding**
   - Clean up goals and habits modules from backend and frontend, preserving `auth` and `user` configurations.
 - [ ] **Step 2: Database Schema & Migration**
-  - Update DDL in `be/src/db/schema.sql` (defining `users`, `tasks` with `user_id`, and `audit_logs`).
+  - Update DDL in `be/src/db/schema.sql` (defining `users`, `tasks`, and `audit_logs`).
   - Rewrite `be/src/db/migrate.ts` to wait for DB connection and seed default tasks, standard user accounts, a default administrator `admin` (password: `admin123`, role: `ADMIN`), and initial audit logs.
 - [ ] **Step 3: Backend Task Module**
   - Define interfaces in `be/src/modules/task/task.types.ts`.
@@ -104,9 +104,9 @@ CREATE TABLE IF NOT EXISTS audit_logs (
   - Implement sequential transition checks and idempotency guards in `be/src/modules/task/task.service.ts`.
   - Create REST controller mapping in `be/src/modules/task/task.controller.ts` and routes in `be/src/routes/task.routes.ts`.
 - [ ] **Step 4: Frontend Auth Pages**
-  - Adapt `fe/src/app/login/page.tsx` and `fe/src/app/register/page.tsx` forms to authenticate the user and save token + role payload in `localStorage`.
+  - Adapt `fe/src/app/login/page.tsx` and `fe/src/app/register/page.tsx` forms to authenticate the user and save token + role payload in cookies/context.
 - [ ] **Step 5: Frontend Task Service & Dashboard**
-  - Implement API endpoints call hooks in `fe/src/services/task/use-tasks.ts`.
+  - Implement API endpoints call hooks in `fe/src/services/task/use-tasks.ts` using Axios with credentials enabled.
   - Build dashboard in `fe/src/app/page.tsx` rendering user username, logout button, role badge, and task columns.
 - [ ] **Step 6: Task Actions & Transition Buttons**
   - Display task cards grouped by status. Add sequential progression buttons mapping to PUT status requests.
