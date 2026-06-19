@@ -47,102 +47,84 @@ async function runMigrations() {
     }
     console.log('Database tables verified/created successfully.');
 
-    // Check if user table is seeded
+    // Check if users table is seeded
     const [users] = await pool.query('SELECT * FROM users LIMIT 1') as [RowDataPacket[], unknown];
     if (users.length === 0) {
-      console.log('Seeding database with demo data...');
+      console.log('Seeding database with demo users, tasks, and audit logs...');
       
-      // 1. Seed Demo User (password: password123)
-      const email = 'demo@habitshaper.com';
-      const passwordHash = bcrypt.hashSync('password123', 10);
+      // 1. Seed Demo User (role: USER, password: password123)
+      const userPasswordHash = bcrypt.hashSync('password123', 10);
       const [userResult] = await pool.query(
-        'INSERT INTO users (email, password_hash) VALUES (?, ?)',
-        [email, passwordHash]
+        'INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)',
+        ['demo', userPasswordHash, 'USER']
       ) as [ResultSetHeader, unknown];
-      const userId = userResult.insertId;
-      console.log(`Demo user created with ID: ${userId}`);
+      const demoUserId = userResult.insertId;
+      console.log(`Standard user 'demo' created with ID: ${demoUserId}`);
 
-      // 2. Seed Habits
-      // A. Build: Meditation
-      const [meditationResult] = await pool.query(
-        'INSERT INTO habits (user_id, name, type) VALUES (?, ?, ?)',
-        [userId, 'Daily Meditation', 'build']
+      // 2. Seed Admin User (role: ADMIN, password: admin123)
+      const adminPasswordHash = bcrypt.hashSync('admin123', 10);
+      const [adminResult] = await pool.query(
+        'INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)',
+        ['admin', adminPasswordHash, 'ADMIN']
       ) as [ResultSetHeader, unknown];
-      const meditationId = meditationResult.insertId;
+      const adminUserId = adminResult.insertId;
+      console.log(`Admin user 'admin' created with ID: ${adminUserId}`);
 
-      // B. Build: Exercise
-      const [exerciseResult] = await pool.query(
-        'INSERT INTO habits (user_id, name, type) VALUES (?, ?, ?)',
-        [userId, 'Daily Gym Workout', 'build']
-      ) as [ResultSetHeader, unknown];
-      const exerciseId = exerciseResult.insertId;
-
-      // C. Break: Fast Food
-      const [junkFoodResult] = await pool.query(
-        'INSERT INTO habits (user_id, name, type) VALUES (?, ?, ?)',
-        [userId, 'Eating Fast Food', 'break']
-      ) as [ResultSetHeader, unknown];
-      const junkFoodId = junkFoodResult.insertId;
-
-      // D. Break: Doomscrolling
-      const [doomscrollResult] = await pool.query(
-        'INSERT INTO habits (user_id, name, type) VALUES (?, ?, ?)',
-        [userId, 'Social Media Doomscrolling', 'break']
-      ) as [ResultSetHeader, unknown];
-      const doomscrollId = doomscrollResult.insertId;
+      // 3. Seed Tasks and corresponding Audit Logs
       
-      console.log('Habits pre-seeded.');
+      // Task 1 (demo user, status pending)
+      const [task1Result] = await pool.query(
+        'INSERT INTO tasks (user_id, title, description, status) VALUES (?, ?, ?, ?)',
+        [demoUserId, 'Prepare Invoice', 'Send June invoice to client.', 'pending']
+      ) as [ResultSetHeader, unknown];
+      const task1Id = task1Result.insertId;
 
-      // 3. Seed logs for past 7 days to simulate streaks and weekly rates
-      const getPastDateString = (daysAgo: number): string => {
-        const d = new Date();
-        d.setDate(d.getDate() - daysAgo);
-        return d.toISOString().split('T')[0];
-      };
-
-      // Meditation (6-day streak up to today): Completed today, yesterday, and past 4 days.
-      for (let i = 0; i <= 5; i++) {
-        await pool.query(
-          'INSERT INTO habit_logs (habit_id, log_date) VALUES (?, ?)',
-          [meditationId, getPastDateString(i)]
-        );
-      }
-
-      // Gym Workout (Completion rate of 4 out of 7 days, missed today):
-      // Completed 1 day ago (yesterday), 3 days ago, 4 days ago, and 6 days ago.
-      const exerciseCompletions = [1, 3, 4, 6];
-      for (const daysAgo of exerciseCompletions) {
-        await pool.query(
-          'INSERT INTO habit_logs (habit_id, log_date) VALUES (?, ?)',
-          [exerciseId, getPastDateString(daysAgo)]
-        );
-      }
-
-      // Fast Food Relapse (relapsed 3 days ago, clean for the last 2 days):
       await pool.query(
-        'INSERT INTO habit_logs (habit_id, log_date) VALUES (?, ?)',
-        [junkFoodId, getPastDateString(3)]
+        'INSERT INTO audit_logs (task_id, task_title, actor, old_status, new_status) VALUES (?, ?, ?, ?, ?)',
+        [task1Id, 'Prepare Invoice', 'demo', null, 'to_do']
+      );
+      await pool.query(
+        'INSERT INTO audit_logs (task_id, task_title, actor, old_status, new_status) VALUES (?, ?, ?, ?, ?)',
+        [task1Id, 'Prepare Invoice', 'demo', 'to_do', 'pending']
       );
 
-      // Doomscrolling (never relapsed - clean since habit was created):
-      // No logs seeded. The clean streak will calculate automatically from creation date.
+      // Task 2 (demo user, status to_do)
+      const [task2Result] = await pool.query(
+        'INSERT INTO tasks (user_id, title, description, status) VALUES (?, ?, ?, ?)',
+        [demoUserId, 'Setup Server Logs', 'Configure logrotate for Express server.', 'to_do']
+      ) as [ResultSetHeader, unknown];
+      const task2Id = task2Result.insertId;
 
-      console.log('Logs and history pre-seeded.');
-
-      // 4. Seed Goals
-      // Goal 1: Meditation challenge (Target 30 days)
       await pool.query(
-        'INSERT INTO goals (user_id, habit_id, title, target_streak) VALUES (?, ?, ?, ?)',
-        [userId, meditationId, '30-Day Mindfulness Journey', 30]
+        'INSERT INTO audit_logs (task_id, task_title, actor, old_status, new_status) VALUES (?, ?, ?, ?, ?)',
+        [task2Id, 'Setup Server Logs', 'demo', null, 'to_do']
       );
 
-      // Goal 2: Fast food clean challenge (Target 7 days)
+      // Task 3 (admin user, status done)
+      const [task3Result] = await pool.query(
+        'INSERT INTO tasks (user_id, title, description, status) VALUES (?, ?, ?, ?)',
+        [adminUserId, 'Review Audit Trail Features', 'Audit trail test scenario validation.', 'done']
+      ) as [ResultSetHeader, unknown];
+      const task3Id = task3Result.insertId;
+
       await pool.query(
-        'INSERT INTO goals (user_id, habit_id, title, target_streak) VALUES (?, ?, ?, ?)',
-        [userId, junkFoodId, '7-Day Eating Clean Challenge', 7]
+        'INSERT INTO audit_logs (task_id, task_title, actor, old_status, new_status) VALUES (?, ?, ?, ?, ?)',
+        [task3Id, 'Review Audit Trail Features', 'admin', null, 'to_do']
+      );
+      await pool.query(
+        'INSERT INTO audit_logs (task_id, task_title, actor, old_status, new_status) VALUES (?, ?, ?, ?, ?)',
+        [task3Id, 'Review Audit Trail Features', 'admin', 'to_do', 'pending']
+      );
+      await pool.query(
+        'INSERT INTO audit_logs (task_id, task_title, actor, old_status, new_status) VALUES (?, ?, ?, ?, ?)',
+        [task3Id, 'Review Audit Trail Features', 'admin', 'pending', 'in_progress']
+      );
+      await pool.query(
+        'INSERT INTO audit_logs (task_id, task_title, actor, old_status, new_status) VALUES (?, ?, ?, ?, ?)',
+        [task3Id, 'Review Audit Trail Features', 'admin', 'in_progress', 'done']
       );
 
-      console.log('Goals pre-seeded successfully.');
+      console.log('Mock tasks and audit logs pre-seeded successfully.');
     } else {
       console.log('Database already contains records. Skipping seed.');
     }
