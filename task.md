@@ -43,6 +43,6 @@
   - [x] Integrate TaskBoard and headers in `fe/src/app/page.tsx`
   - [x] Implement Admin toggle between Task Board and Global Audit Logs
   - [x] Sanitize references from Habit Shaper to Mini Task Manager
-- [/] **Step 12: Compilation and E2E Verification**
-  - [/] Verify frontend compiles successfully via `npm run build`
+- [x] **Step 12: Compilation and E2E Verification**
+  - [x] Verify frontend compiles successfully via `npm run build`
   - [ ] Run `docker compose up --build` and verify full E2E flow
