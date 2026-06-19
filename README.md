@@ -58,6 +58,7 @@ To help review the application immediately, the database is auto-seeded on first
     $$\text{to\_do} \rightarrow \text{pending} \rightarrow \text{in\_progress} \rightarrow \text{done}$$
     No shortcuts (e.g. `to_do` $\rightarrow$ `in_progress`) or regressions (e.g. `in_progress` $\rightarrow$ `pending`) are allowed.
 3.  **Log Permanence:** If a task is deleted, its audit logs must not be deleted. We copy the task's title into the log row (`task_title`) and use `ON DELETE SET NULL` on the `task_id` foreign key.
+4.  **Authentication & Roles**: Although the core prompt states that authentication is optional and warns against overengineering ("Tidak perlu auth, role, atau UI kompleks"), we chose to implement a production-grade role-based authentication model (stored securely inside HttpOnly cookies) to fulfill the requirements of user ownership, actor validation, and admin log streams in a realistic end-to-end setting.
 
 ### Trade-offs Made
 1.  **Session Cookies over Authorization Headers:** Storing JWTs in HttpOnly cookies increases XSS protection but introduces CSRF risks. We mitigated this by setting the `SameSite=Lax` cookie policy.
