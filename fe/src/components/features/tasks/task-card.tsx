@@ -1,12 +1,9 @@
 "use client";
 
+import { Task, TaskStatus } from "@/services/task/types";
+import { useDeleteTask, useUpdateTaskStatus } from "@/services/task/use-tasks";
+import { useAuth } from "@/store/auth-store";
 import { ArrowRight, CheckCircle2, History, Trash2, User } from "lucide-react";
-import { useAuth } from "../../../store/auth-store";
-import { Task, TaskStatus } from "../../../services/task/types";
-import {
-  useDeleteTask,
-  useUpdateTaskStatus,
-} from "../../../services/task/use-tasks";
 
 interface TaskCardProps {
   task: Task;

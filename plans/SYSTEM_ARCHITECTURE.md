@@ -11,7 +11,8 @@ This document breaks down the technology stack, library details, folder structur
 *   **Styling**: **Tailwind CSS v4** & **Radix UI** primitives.
 *   **Libraries**:
     *   `@tanstack/react-query` — Client caching and API state synchronization.
-    *   `@radix-ui/react-dialog` — Accessible centered modal overlays for viewing task-specific and global audit logs.
+    *   `zustand` — Lightweight global state management for client-side authentication sessions.
+    *   `@radix-ui/react-dialog` — Accessible centered modal overlays for task creation and audit log displays.
     *   `sonner` — Lightweight confirmation and error toast notifications.
     *   `axios` — Promise-based HTTP client. Configured with `withCredentials: true` to automatically send the HttpOnly JWT session cookie on every request.
     *   `lucide-react` — Accessible vector SVG icons (e.g. `ClipboardList`, `CheckCircle`, `Calendar`, `History`, `User`, `LogIn`, `LogOut`, `Database`).
@@ -58,14 +59,18 @@ fe/
     │           ├── task-dialog.tsx     # Modal to add a new task
     │           ├── task-audit-logs.tsx # Modal to display task logs (filtered by user context)
     │           └── global-audit-logs.tsx # Modal/Panel to display all audit logs (Admin only)
-    ├── context/
-    │   └── auth-context.tsx  # Coordinates user login/registration tokens and role
+    ├── store/
+    │   └── auth-store.ts     # Zustand store coordinating user login/registration and role session
     ├── lib/
     │   ├── api.ts            # Axios configuration with withCredentials: true
     │   └── utils.ts          # Merging Tailwind classes
     └── services/
-        └── task/             # Task API queries and React Query hooks
+        ├── auth/             # Authentication pure API request services
+        │   ├── auth.service.ts
+        │   └── index.ts
+        └── task/             # Task API services and TanStack Query hooks
             ├── index.ts      # Exporter
+            ├── task.service.ts # Pure task API client calls
             └── use-tasks.ts  # TanStack query hooks for tasks and global logs
 ```
 

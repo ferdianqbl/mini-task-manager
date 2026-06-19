@@ -1,6 +1,6 @@
 "use client";
 
-import { Task, TaskStatus } from "../../../services/task/types";
+import { Task, TaskStatus } from "@/services/task/types";
 import TaskCard from "./task-card";
 
 interface TaskBoardProps {

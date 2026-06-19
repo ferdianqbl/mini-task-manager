@@ -65,7 +65,7 @@ We define a custom theme in `src/app/globals.css` using Tailwind v4's CSS-first 
 *   **Header**:
     *   Left side: App logo + Title.
     *   Right side: Pre-labeled badge displaying role (`USER` or `ADMIN`), user's username, and a "Logout" button.
-    *   **Admin-only link**: If authenticated as `ADMIN`, display a prominent "Global Logs" button in the header.
+    *   **Admin Toolbar**: If authenticated as `ADMIN`, display a toolbar below the header allowing the user to toggle between the "Task Boards" view and the "System Audit Stream" view.
 *   **Grid (Screens >= 1024px)**:
     *   A 4-column Kanban board layout:
         $$\text{To Do} \rightarrow \text{Pending} \rightarrow \text{In Progress} \rightarrow \text{Done}$$
@@ -83,7 +83,7 @@ We use lightweight custom components built on Radix UI primitives:
     *   A vertical timeline list of logs, sorted chronologically.
     *   *User view:* displays only logs created by themselves.
     *   *Admin view:* displays logs created by any user (each log specifies the actor's username).
-*   **Admin Global Logs Panel**: A dedicated full-screen drawer or modal accessible only to `ADMIN` users displaying a scrolling feed of all audit logs across all users.
+*   **Admin Global Logs Stream**: A dedicated list view containing a filterable table of all audit logs across all users, swapped in place of the Kanban board when the Admin selects the System Audit Stream view.
 
 ---
 

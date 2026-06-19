@@ -42,7 +42,7 @@ To help review the application immediately, the database is auto-seeded on first
 
 ## 🛠️ Architecture & Tech Stack
 
-*   **Frontend:** React (Next.js App Router), TypeScript, Tailwind CSS v4, Radix UI Dialog, Axios, and TanStack React Query.
+*   **Frontend:** React (Next.js App Router), TypeScript, Tailwind CSS v4, Radix UI Dialog, Axios, Zustand (client session state), and TanStack React Query.
 *   **Backend:** Node.js, Express, TypeScript, and native MySQL (`mysql2` connection pool).
 *   **Database:** MySQL 8.0 with named volumes for persistence.
 *   **Authentication & Security:** JWT session token stored in secure, HttpOnly cookies (`Cookie: token=...`), guarding requests against XSS attacks.

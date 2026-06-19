@@ -1,8 +1,8 @@
 "use client";
 
+import { useCreateTask } from "@/services/task/use-tasks";
 import { X } from "lucide-react";
 import React, { useState } from "react";
-import { useCreateTask } from "../../../services/task/use-tasks";
 
 interface TaskDialogProps {
   isOpen: boolean;

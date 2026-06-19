@@ -9,10 +9,10 @@ This document lists the validation rules and verification checkpoints for the **
 | Requirement Area | Detailed Specification | Target Backend File | Target Frontend File |
 | :--- | :--- | :--- | :--- |
 | **Authentication** | Secure registration & login via username and password | `auth.routes.ts` | `login-form.tsx`, `register-form.tsx` |
-| **Authentication** | JWT-based session authorization for API queries | `auth.middleware.ts` | `api.ts`, `auth-context.tsx` |
+| **Authentication** | JWT-based session authorization for API queries | `auth.middleware.ts` | `api.ts`, `auth-store.ts`, `auth.service.ts` |
 | **Session Security** | Session token stored in XSS-proof `HttpOnly` Cookies | `auth.controller.ts` | `api.ts` (withCredentials) |
-| **Role Management** | User roles (`USER` and `ADMIN`) specified in JWT token | `auth.controller.ts` | `auth-context.tsx` |
-| **Role Management** | Global Audit Logs fetch blocked for standard users (returns `403 Forbidden`) | `auth.middleware.ts` | `use-tasks.ts` |
+| **Role Management** | User roles (`USER` and `ADMIN`) specified in JWT token | `auth.controller.ts` | `auth-store.ts` |
+| **Role Management** | Global Audit Logs fetch blocked for standard users (returns `403 Forbidden`) | `auth.middleware.ts` | `use-tasks.ts`, `task.service.ts` |
 | **Role Management** | Global Audit Logs fetch permitted for administrators | `auth.middleware.ts` | `global-audit-logs.tsx` |
 | **Task Ownership** | Standard users can only view/transition/delete their own tasks | `task.repository.ts` | `page.tsx` |
 | **Task Ownership** | Administrators can view/transition/delete tasks of any user | `task.repository.ts` | `page.tsx` |

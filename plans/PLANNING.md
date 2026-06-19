@@ -93,24 +93,24 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 
 ## 3. Development Roadmap
 
-- [ ] **Step 1: Setup Workspace scaffolding**
+- [x] **Step 1: Setup Workspace scaffolding**
   - Clean up goals and habits modules from backend and frontend, preserving `auth` and `user` configurations.
-- [ ] **Step 2: Database Schema & Migration**
+- [x] **Step 2: Database Schema & Migration**
   - Update DDL in `be/src/db/schema.sql` (defining `users`, `tasks`, and `audit_logs`).
   - Rewrite `be/src/db/migrate.ts` to wait for DB connection and seed default tasks, standard user accounts, a default administrator `admin` (password: `admin123`, role: `ADMIN`), and initial audit logs.
-- [ ] **Step 3: Backend Task Module**
+- [x] **Step 3: Backend Task Module**
   - Define interfaces in `be/src/modules/task/task.types.ts`.
   - Write SQL repository query methods in `be/src/modules/task/task.repository.ts` implementing MySQL pool transactions, task ownership clauses (`WHERE tasks.user_id = ?` for `USER`), and log filters (`WHERE actor = ?` for `USER`).
   - Implement sequential transition checks and idempotency guards in `be/src/modules/task/task.service.ts`.
   - Create REST controller mapping in `be/src/modules/task/task.controller.ts` and routes in `be/src/routes/task.routes.ts`.
-- [ ] **Step 4: Frontend Auth Pages**
+- [x] **Step 4: Frontend Auth Pages**
   - Adapt `fe/src/app/login/page.tsx` and `fe/src/app/register/page.tsx` forms to authenticate the user and save token + role payload in cookies/context.
-- [ ] **Step 5: Frontend Task Service & Dashboard**
+- [x] **Step 5: Frontend Task Service & Dashboard**
   - Implement API endpoints call hooks in `fe/src/services/task/use-tasks.ts` using Axios with credentials enabled.
   - Build dashboard in `fe/src/app/page.tsx` rendering user username, logout button, role badge, and task columns.
-- [ ] **Step 6: Task Actions & Transition Buttons**
+- [x] **Step 6: Task Actions & Transition Buttons**
   - Display task cards grouped by status. Add sequential progression buttons mapping to PUT status requests.
-- [ ] **Step 7: Admin Global Logs Modal/Drawer**
+- [x] **Step 7: Admin Global Logs Modal/Drawer**
   - Create `global-audit-logs.tsx` rendered conditionally only if the user has `ADMIN` role.
-- [ ] **Step 8: Verification & Compilation Checks**
+- [x] **Step 8: Verification & Compilation Checks**
   - Run containers via `docker compose up`. Check TypeScript compilations and run audit-trail test cases.

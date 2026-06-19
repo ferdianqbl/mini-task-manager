@@ -1,7 +1,7 @@
 "use client";
 
-import { TaskStatus } from "../../../services/task/types";
-import { useGlobalAuditLogs } from "../../../services/task/use-tasks";
+import { TaskStatus } from "@/services/task/types";
+import { useGlobalAuditLogs } from "@/services/task/use-tasks";
 import {
   AlertCircle,
   ArrowRight,

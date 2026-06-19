@@ -1,7 +1,7 @@
 "use client";
 
-import { TaskStatus } from "../../../services/task/types";
-import { useTaskAuditLogs } from "../../../services/task/use-tasks";
+import { TaskStatus } from "@/services/task/types";
+import { useTaskAuditLogs } from "@/services/task/use-tasks";
 import { ArrowRight, Calendar, User, X } from "lucide-react";
 
 interface TaskAuditLogsProps {
