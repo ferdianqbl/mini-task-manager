@@ -68,7 +68,7 @@ We define a custom theme in `src/app/globals.css` using Tailwind v4's CSS-first 
     *   **Admin Toolbar**: If authenticated as `ADMIN`, display a toolbar below the header allowing the user to toggle between the "Task Boards" view and the "System Audit Stream" view.
 *   **Grid (Screens >= 1024px)**:
     *   A 4-column Kanban board layout:
-        $$\text{To Do} \rightarrow \text{Pending} \rightarrow \text{In Progress} \rightarrow \text{Done}$$
+        `To Do` &rarr; `Pending` &rarr; `In Progress` &rarr; `Done`
     *   *User view:* Displays only cards owned by the logged-in user.
     *   *Admin view:* Displays all tasks from all users (each card features a small, subtle badge: `Owner: [username]`).
 

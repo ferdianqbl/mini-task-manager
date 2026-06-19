@@ -40,7 +40,7 @@ In internal team settings, tasks frequently change status, but it is often uncle
 *   **Delete Task**: Checked for ownership (for `USER`) or admin override.
 
 ### State Transition Validation (Domain Rules)
-*   Strict sequential transitions: `to_do` $\rightarrow$ `pending` $\rightarrow$ `in_progress` $\rightarrow$ `done`.
+*   Strict sequential transitions: `to_do` &rarr; `pending` &rarr; `in_progress` &rarr; `done`.
 *   **Idempotency**: Same-status updates succeed but do not write logs.
 
 ### Audit Logging & Access Control

@@ -55,8 +55,8 @@ To help review the application immediately, the database is auto-seeded on first
 ### Assumptions Taken
 1.  **Shared vs. Personal Tasks:** To make user roles meaningful, we assumed a task ownership model. A standard `USER` manages their personal tasks and sees only their own actions. An `ADMIN` acts as an supervisor who can see all tasks, all logs, and a global log feed.
 2.  **Sequential State Machine:** Tasks must transition strictly as follows:
-    $$\text{to\_do} \rightarrow \text{pending} \rightarrow \text{in\_progress} \rightarrow \text{done}$$
-    No shortcuts (e.g. `to_do` $\rightarrow$ `in_progress`) or regressions (e.g. `in_progress` $\rightarrow$ `pending`) are allowed.
+    `to_do` &rarr; `pending` &rarr; `in_progress` &rarr; `done`
+    No shortcuts (e.g. `to_do` &rarr; `in_progress`) or regressions (e.g. `in_progress` &rarr; `pending`) are allowed.
 3.  **Log Permanence:** If a task is deleted, its audit logs must not be deleted. We copy the task's title into the log row (`task_title`) and use `ON DELETE SET NULL` on the `task_id` foreign key.
 4.  **Authentication & Roles**: Although the core prompt states that authentication is optional and warns against overengineering ("Tidak perlu auth, role, atau UI kompleks"), we chose to implement a production-grade role-based authentication model (stored securely inside HttpOnly cookies) to fulfill the requirements of user ownership, actor validation, and admin log streams in a realistic end-to-end setting.
 
