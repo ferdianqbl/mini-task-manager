@@ -3,14 +3,24 @@
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
-import { useAuth } from "../../../context/auth-context";
+import { useAuth } from "../../../store/auth-store";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function LoginForm() {
-  const { login } = useAuth();
+  const { login, user, isLoading } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user && !isLoading) {
+      router.push("/");
+    }
+  }, [user, isLoading, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,7 +28,7 @@ export default function LoginForm() {
     try {
       await login(username, password);
     } catch {
-      // Toast is already shown in auth-context
+      // Toast is already shown in auth-store
     } finally {
       setLoading(false);
     }

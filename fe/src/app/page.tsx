@@ -6,12 +6,27 @@ import GlobalAuditLogs from "../components/features/tasks/global-audit-logs";
 import TaskAuditLogs from "../components/features/tasks/task-audit-logs";
 import TaskBoard from "../components/features/tasks/task-board";
 import TaskDialog from "../components/features/tasks/task-dialog";
-import { useAuth } from "../context/auth-context";
+import { useAuth } from "../store/auth-store";
 import { useTasks } from "../services/task/use-tasks";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function DashboardPage() {
-  const { user, logout, isLoading: isAuthLoading } = useAuth();
+  const { user, logout, isLoading: isAuthLoading, loadUser } = useAuth();
   const { data: tasks = [], isLoading: isTasksLoading } = useTasks();
+  const router = useRouter();
+
+  // Load user session on mount
+  useEffect(() => {
+    loadUser();
+  }, [loadUser]);
+
+  // Redirect if unauthorized
+  useEffect(() => {
+    if (!isAuthLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, isAuthLoading, router]);
 
   // State for modals and panels
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -21,7 +36,7 @@ export default function DashboardPage() {
     title: string;
   } | null>(null);
 
-  if (isAuthLoading) {
+  if (isAuthLoading || (!user && isAuthLoading)) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-[#090D16] space-y-4">
         <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-primary border-r-2" />

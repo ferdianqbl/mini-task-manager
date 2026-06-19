@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowRight, CheckCircle2, History, Trash2, User } from "lucide-react";
-import { useAuth } from "../../../context/auth-context";
+import { useAuth } from "../../../store/auth-store";
 import { Task, TaskStatus } from "../../../services/task/types";
 import {
   useDeleteTask,

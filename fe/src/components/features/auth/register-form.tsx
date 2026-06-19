@@ -4,16 +4,26 @@ import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 import { toast } from "sonner";
-import { useAuth } from "../../../context/auth-context";
+import { useAuth } from "../../../store/auth-store";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function RegisterForm() {
-  const { register } = useAuth();
+  const { register, user, isLoading } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user && !isLoading) {
+      router.push("/");
+    }
+  }, [user, isLoading, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +43,7 @@ export default function RegisterForm() {
     try {
       await register(username, password);
     } catch {
-      // Toast is already shown in auth-context
+      // Toast is already shown in auth-store
     } finally {
       setLoading(false);
     }
