@@ -4,17 +4,18 @@ import { User, CreateUserDTO } from './user.types';
 
 export class UserRepository {
   async createUser(dto: CreateUserDTO): Promise<number> {
+    const role = dto.role || 'USER';
     const [result] = await pool.query(
-      'INSERT INTO users (email, password_hash) VALUES (?, ?)',
-      [dto.email, dto.password_hash]
+      'INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)',
+      [dto.username, dto.password_hash, role]
     ) as [ResultSetHeader, unknown];
     return result.insertId;
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async findByUsername(username: string): Promise<User | null> {
     const [rows] = await pool.query(
-      'SELECT * FROM users WHERE email = ?',
-      [email]
+      'SELECT * FROM users WHERE username = ?',
+      [username]
     ) as [RowDataPacket[], unknown];
     
     if (rows.length === 0) return null;

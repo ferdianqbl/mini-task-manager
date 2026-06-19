@@ -1,14 +1,15 @@
 export interface LoginDTO {
-  email: string;
+  username: string;
   password: string;
 }
 
 export interface RegisterDTO {
-  email: string;
+  username: string;
   password: string;
 }
 
 export interface JWTPayload {
   id: number;
-  email: string;
+  username: string;
+  role: 'ADMIN' | 'USER';
 }

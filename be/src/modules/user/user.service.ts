@@ -3,9 +3,9 @@ import { CreateUserDTO, User } from './user.types';
 
 export class UserService {
   async createUser(dto: CreateUserDTO): Promise<User> {
-    const existing = await userRepository.findByEmail(dto.email);
+    const existing = await userRepository.findByUsername(dto.username);
     if (existing) {
-      throw new Error('User with this email already exists.');
+      throw new Error('User with this username already exists.');
     }
     const insertId = await userRepository.createUser(dto);
     const user = await userRepository.findById(insertId);
@@ -15,8 +15,8 @@ export class UserService {
     return user;
   }
 
-  async getUserByEmail(email: string): Promise<User | null> {
-    return userRepository.findByEmail(email);
+  async getUserByUsername(username: string): Promise<User | null> {
+    return userRepository.findByUsername(username);
   }
 
   async getUserById(id: number): Promise<User | null> {

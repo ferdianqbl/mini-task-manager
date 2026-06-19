@@ -1,12 +1,14 @@
 export interface User {
   id: number;
-  email: string;
+  username: string;
   password_hash: string;
+  role: 'ADMIN' | 'USER';
   created_at?: Date;
   updated_at?: Date;
 }
 
 export interface CreateUserDTO {
-  email: string;
+  username: string;
   password_hash: string;
+  role?: 'ADMIN' | 'USER';
 }

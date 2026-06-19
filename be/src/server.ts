@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import runMigrations from './db/migrate';
 import apiRoutes from './routes';
@@ -9,7 +10,13 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5001;
 
-app.use(cors());
+// Enable CORS with support for credentials (cookies)
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true
+}));
+
+app.use(cookieParser());
 app.use(express.json());
 
 // Mount central router
