@@ -2,6 +2,16 @@
 
 A secure, audit-ready full-stack task management application with role-based visibility (`USER` and `ADMIN`) and immutable status change logs.
 
+## 📖 Document Index
+
+Detailed specifications and architectural designs are structured under the `/plans` directory:
+*   **Product Requirements (PRD)**: [plans/PRD.md](plans/PRD.md)
+*   **UI/UX Design Specification**: [plans/DESIGN.md](plans/DESIGN.md)
+*   **System Architecture & Directory Tree**: [plans/SYSTEM_ARCHITECTURE.md](plans/SYSTEM_ARCHITECTURE.md)
+*   **API Specification & Endpoints**: [plans/API.md](plans/API.md)
+*   **Roadmap & Planning DDL**: [plans/PLANNING.md](plans/PLANNING.md)
+*   **Feature Validation Matrix**: [plans/VALIDATION_RESULTS.md](plans/VALIDATION_RESULTS.md)
+
 ---
 
 ## 🚀 Quick Start (Docker Compose)
