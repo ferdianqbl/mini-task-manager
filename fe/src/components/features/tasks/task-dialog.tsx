@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useCreateTask } from '../../../services/task/use-tasks';
-import { X } from 'lucide-react';
+import { X } from "lucide-react";
+import React, { useState } from "react";
+import { useCreateTask } from "../../../services/task/use-tasks";
 
 interface TaskDialogProps {
   isOpen: boolean;
@@ -11,8 +11,8 @@ interface TaskDialogProps {
 
 export default function TaskDialog({ isOpen, onClose }: TaskDialogProps) {
   const { mutateAsync: createTask, isPending } = useCreateTask();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
 
   if (!isOpen) return null;
 
@@ -25,8 +25,8 @@ export default function TaskDialog({ isOpen, onClose }: TaskDialogProps) {
         title: title.trim(),
         description: description.trim() || undefined,
       });
-      setTitle('');
-      setDescription('');
+      setTitle("");
+      setDescription("");
       onClose();
     } catch {
       // Errors are handled in mutation via toast
@@ -35,7 +35,7 @@ export default function TaskDialog({ isOpen, onClose }: TaskDialogProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-      <div 
+      <div
         className="w-full max-w-md bg-[#0F172A] border border-border rounded-xl shadow-2xl p-6 relative overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
@@ -96,7 +96,7 @@ export default function TaskDialog({ isOpen, onClose }: TaskDialogProps) {
               disabled={isPending || !title.trim()}
               className="px-5 py-2.5 bg-primary text-primary-foreground font-semibold text-xs rounded-md shadow-md shadow-primary/10 hover:bg-primary/95 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
-              {isPending ? 'Creating...' : 'Create Task'}
+              {isPending ? "Creating..." : "Create Task"}
             </button>
           </div>
         </form>

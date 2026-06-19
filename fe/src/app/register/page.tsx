@@ -1,4 +1,4 @@
-import RegisterForm from '../../components/features/auth/register-form';
+import RegisterForm from "../../components/features/auth/register-form";
 
 export default function RegisterPage() {
   return (
@@ -6,7 +6,7 @@ export default function RegisterPage() {
       {/* Decorative modern backgrounds */}
       <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-emerald-500/5 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-cyan-500/5 blur-[120px] pointer-events-none" />
-      
+
       <RegisterForm />
     </main>
   );

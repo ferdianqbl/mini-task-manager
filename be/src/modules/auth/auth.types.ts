@@ -11,5 +11,5 @@ export interface RegisterDTO {
 export interface JWTPayload {
   id: number;
   username: string;
-  role: 'ADMIN' | 'USER';
+  role: "ADMIN" | "USER";
 }

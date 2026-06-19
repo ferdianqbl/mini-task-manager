@@ -1,6 +1,6 @@
-import { JWTPayload } from '../modules/auth/auth.types';
+import { JWTPayload } from "../modules/auth/auth.types";
 
-declare module 'express-serve-static-core' {
+declare module "express-serve-static-core" {
   interface Request {
     user?: JWTPayload;
   }

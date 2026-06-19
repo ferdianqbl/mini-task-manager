@@ -1,28 +1,33 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useAuth } from '../context/auth-context';
-import { useTasks } from '../services/task/use-tasks';
-import TaskBoard from '../components/features/tasks/task-board';
-import TaskDialog from '../components/features/tasks/task-dialog';
-import TaskAuditLogs from '../components/features/tasks/task-audit-logs';
-import GlobalAuditLogs from '../components/features/tasks/global-audit-logs';
-import { LogOut, CheckSquare, Plus, Activity, Columns } from 'lucide-react';
+import { Activity, CheckSquare, Columns, LogOut, Plus } from "lucide-react";
+import { useState } from "react";
+import GlobalAuditLogs from "../components/features/tasks/global-audit-logs";
+import TaskAuditLogs from "../components/features/tasks/task-audit-logs";
+import TaskBoard from "../components/features/tasks/task-board";
+import TaskDialog from "../components/features/tasks/task-dialog";
+import { useAuth } from "../context/auth-context";
+import { useTasks } from "../services/task/use-tasks";
 
 export default function DashboardPage() {
   const { user, logout, isLoading: isAuthLoading } = useAuth();
   const { data: tasks = [], isLoading: isTasksLoading } = useTasks();
-  
+
   // State for modals and panels
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'board' | 'logs'>('board');
-  const [logDetails, setLogDetails] = useState<{ id: number; title: string } | null>(null);
+  const [activeTab, setActiveTab] = useState<"board" | "logs">("board");
+  const [logDetails, setLogDetails] = useState<{
+    id: number;
+    title: string;
+  } | null>(null);
 
   if (isAuthLoading) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-[#090D16] space-y-4">
         <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-primary border-r-2" />
-        <span className="text-sm text-text-secondary">Resolving user session...</span>
+        <span className="text-sm text-text-secondary">
+          Resolving user session...
+        </span>
       </div>
     );
   }
@@ -64,7 +69,10 @@ export default function DashboardPage() {
             </button>
 
             <span className="hidden md:inline-block text-xs font-semibold text-text-secondary bg-white/5 px-3 py-1.5 rounded-full border border-border">
-              Logged in: <span className="text-text-primary font-bold">{user.username}</span>
+              Logged in:{" "}
+              <span className="text-text-primary font-bold">
+                {user.username}
+              </span>
               <span className="ml-1.5 px-1.5 py-0.5 bg-primary/15 text-primary text-[9px] font-bold rounded-sm border border-primary/25 font-mono">
                 {user.role}
               </span>
@@ -82,26 +90,26 @@ export default function DashboardPage() {
       </header>
 
       {/* Admin Tab Switching Toolbar */}
-      {user.role === 'ADMIN' && (
+      {user.role === "ADMIN" && (
         <div className="bg-[#0B0F19]/40 border-b border-border/60">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center space-x-4">
             <button
-              onClick={() => setActiveTab('board')}
+              onClick={() => setActiveTab("board")}
               className={`inline-flex items-center space-x-1.5 text-xs font-bold px-3 py-1.5 rounded-md border transition cursor-pointer ${
-                activeTab === 'board'
-                  ? 'bg-primary/10 border-primary/30 text-primary'
-                  : 'bg-transparent border-transparent text-text-secondary hover:text-text-primary'
+                activeTab === "board"
+                  ? "bg-primary/10 border-primary/30 text-primary"
+                  : "bg-transparent border-transparent text-text-secondary hover:text-text-primary"
               }`}
             >
               <Columns className="h-3.5 w-3.5" />
               <span>Task Boards</span>
             </button>
             <button
-              onClick={() => setActiveTab('logs')}
+              onClick={() => setActiveTab("logs")}
               className={`inline-flex items-center space-x-1.5 text-xs font-bold px-3 py-1.5 rounded-md border transition cursor-pointer ${
-                activeTab === 'logs'
-                  ? 'bg-primary/10 border-primary/30 text-primary'
-                  : 'bg-transparent border-transparent text-text-secondary hover:text-text-primary'
+                activeTab === "logs"
+                  ? "bg-primary/10 border-primary/30 text-primary"
+                  : "bg-transparent border-transparent text-text-secondary hover:text-text-primary"
               }`}
             >
               <Activity className="h-3.5 w-3.5" />
@@ -113,27 +121,27 @@ export default function DashboardPage() {
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
-        {activeTab === 'logs' && user.role === 'ADMIN' ? (
+        {activeTab === "logs" && user.role === "ADMIN" ? (
           <GlobalAuditLogs />
         ) : (
-          <TaskBoard 
-            tasks={tasks} 
-            isLoading={isTasksLoading} 
-            onOpenLogs={handleOpenLogs} 
+          <TaskBoard
+            tasks={tasks}
+            isLoading={isTasksLoading}
+            onOpenLogs={handleOpenLogs}
           />
         )}
       </main>
 
       {/* Modal Dialogs / Slide Overs */}
-      <TaskDialog 
-        isOpen={isCreateOpen} 
-        onClose={() => setIsCreateOpen(false)} 
+      <TaskDialog
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
       />
 
       <TaskAuditLogs
         isOpen={logDetails !== null}
         taskId={logDetails?.id || 0}
-        taskTitle={logDetails?.title || ''}
+        taskTitle={logDetails?.title || ""}
         onClose={() => setLogDetails(null)}
       />
 

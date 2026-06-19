@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useAuth } from '../../../context/auth-context';
-import Link from 'next/link';
-import { toast } from 'sonner';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
+import React, { useState } from "react";
+import { toast } from "sonner";
+import { useAuth } from "../../../context/auth-context";
 
 export default function RegisterForm() {
   const { register } = useAuth();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -19,12 +19,12 @@ export default function RegisterForm() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error("Passwords do not match");
       return;
     }
     if (password.length < 6) {
-      toast.error('Password too short', {
-        description: 'Password must be at least 6 characters long.',
+      toast.error("Password too short", {
+        description: "Password must be at least 6 characters long.",
       });
       return;
     }
@@ -45,7 +45,9 @@ export default function RegisterForm() {
         <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
           Create Account
         </h1>
-        <p className="text-sm text-text-secondary mt-2">Sign up to start managing your tasks</p>
+        <p className="text-sm text-text-secondary mt-2">
+          Sign up to start managing your tasks
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -69,7 +71,7 @@ export default function RegisterForm() {
           </label>
           <div className="relative">
             <input
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -82,7 +84,11 @@ export default function RegisterForm() {
               className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary transition cursor-pointer"
               tabIndex={-1}
             >
-              {showPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
+              {showPassword ? (
+                <EyeOff className="h-4.5 w-4.5" />
+              ) : (
+                <Eye className="h-4.5 w-4.5" />
+              )}
             </button>
           </div>
         </div>
@@ -93,7 +99,7 @@ export default function RegisterForm() {
           </label>
           <div className="relative">
             <input
-              type={showConfirmPassword ? 'text' : 'password'}
+              type={showConfirmPassword ? "text" : "password"}
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
@@ -106,7 +112,11 @@ export default function RegisterForm() {
               className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary transition cursor-pointer"
               tabIndex={-1}
             >
-              {showConfirmPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
+              {showConfirmPassword ? (
+                <EyeOff className="h-4.5 w-4.5" />
+              ) : (
+                <Eye className="h-4.5 w-4.5" />
+              )}
             </button>
           </div>
         </div>
@@ -116,14 +126,17 @@ export default function RegisterForm() {
           disabled={loading}
           className="w-full py-3 bg-primary text-primary-foreground font-semibold rounded-md shadow-lg shadow-primary/10 hover:bg-primary/95 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-[0.98]"
         >
-          {loading ? 'Creating Account...' : 'Sign Up'}
+          {loading ? "Creating Account..." : "Sign Up"}
         </button>
       </form>
 
       <div className="text-center mt-6">
         <p className="text-sm text-text-secondary">
-          Already have an account?{' '}
-          <Link href="/login" className="text-primary hover:underline font-semibold">
+          Already have an account?{" "}
+          <Link
+            href="/login"
+            className="text-primary hover:underline font-semibold"
+          >
             Sign In
           </Link>
         </p>

@@ -1,8 +1,12 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { QueryClient, QueryClientProvider, isServer } from '@tanstack/react-query';
-import { AuthProvider } from '../context/auth-context';
+import {
+  QueryClient,
+  QueryClientProvider,
+  isServer,
+} from "@tanstack/react-query";
+import React from "react";
+import { AuthProvider } from "../context/auth-context";
 
 function makeQueryClient() {
   return new QueryClient({

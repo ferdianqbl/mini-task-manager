@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "../components/ui/sonner";
 import "./globals.css";
 import Providers from "./providers";
-import { Toaster } from "../components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,7 +16,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Habit Shaper — Track Streaks & Habits Daily",
-  description: "A minimalist, premium daily habit tracking dashboard to establish positive build streaks and break negative relapses.",
+  description:
+    "A minimalist, premium daily habit tracking dashboard to establish positive build streaks and break negative relapses.",
 };
 
 export default function RootLayout({
@@ -30,9 +31,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Providers>
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
         <Toaster position="top-right" richColors closeButton />
       </body>
     </html>

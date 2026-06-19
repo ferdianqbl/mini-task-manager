@@ -1,16 +1,16 @@
-import { userRepository } from './user.repository';
-import { CreateUserDTO, User } from './user.types';
+import { userRepository } from "./user.repository";
+import { CreateUserDTO, User } from "./user.types";
 
 export class UserService {
   async createUser(dto: CreateUserDTO): Promise<User> {
     const existing = await userRepository.findByUsername(dto.username);
     if (existing) {
-      throw new Error('User with this username already exists.');
+      throw new Error("User with this username already exists.");
     }
     const insertId = await userRepository.createUser(dto);
     const user = await userRepository.findById(insertId);
     if (!user) {
-      throw new Error('Failed to retrieve user after creation.');
+      throw new Error("Failed to retrieve user after creation.");
     }
     return user;
   }

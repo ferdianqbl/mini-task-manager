@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { Response } from "express";
 
 export interface ApiResponse<T = unknown> {
   success: boolean;
@@ -12,7 +12,7 @@ export function sendResponse<T>(
   code: number,
   success: boolean,
   message: string,
-  data: T | null = null
+  data: T | null = null,
 ): Response {
   const responsePayload: ApiResponse<T | null> = {
     success,
@@ -26,8 +26,8 @@ export function sendResponse<T>(
 export function successResponse<T>(
   res: Response,
   data: T,
-  message = 'Success',
-  code = 200
+  message = "Success",
+  code = 200,
 ): Response {
   return sendResponse(res, code, true, message, data);
 }
@@ -35,7 +35,7 @@ export function successResponse<T>(
 export function errorResponse(
   res: Response,
   message: string,
-  code = 400
+  code = 400,
 ): Response {
   return sendResponse(res, code, false, message, null);
 }

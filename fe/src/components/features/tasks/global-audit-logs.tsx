@@ -1,36 +1,49 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useGlobalAuditLogs } from '../../../services/task/use-tasks';
-import { TaskStatus } from '../../../services/task/types';
-import { Calendar, User, Search, RefreshCw, AlertCircle, ArrowRight } from 'lucide-react';
+import {
+  AlertCircle,
+  ArrowRight,
+  Calendar,
+  RefreshCw,
+  Search,
+  User,
+} from "lucide-react";
+import { useState } from "react";
+import { TaskStatus } from "../../../services/task/types";
+import { useGlobalAuditLogs } from "../../../services/task/use-tasks";
 
 const statusLabels: Record<TaskStatus, string> = {
-  to_do: 'To Do',
-  pending: 'Pending',
-  in_progress: 'In Progress',
-  done: 'Done',
+  to_do: "To Do",
+  pending: "Pending",
+  in_progress: "In Progress",
+  done: "Done",
 };
 
 const statusColors: Record<TaskStatus, string> = {
-  to_do: 'text-text-secondary bg-white/5 border-white/10',
-  pending: 'text-amber-400 bg-amber-400/10 border-amber-400/20',
-  in_progress: 'text-cyan-400 bg-cyan-400/10 border-cyan-400/20',
-  done: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
+  to_do: "text-text-secondary bg-white/5 border-white/10",
+  pending: "text-amber-400 bg-amber-400/10 border-amber-400/20",
+  in_progress: "text-cyan-400 bg-cyan-400/10 border-cyan-400/20",
+  done: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
 };
 
 export default function GlobalAuditLogs() {
-  const { data: logs, isLoading, error, refetch, isRefetching } = useGlobalAuditLogs();
-  const [searchTerm, setSearchTerm] = useState('');
+  const {
+    data: logs,
+    isLoading,
+    error,
+    refetch,
+    isRefetching,
+  } = useGlobalAuditLogs();
+  const [searchTerm, setSearchTerm] = useState("");
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleString(undefined, {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
     });
   };
 
@@ -54,7 +67,8 @@ export default function GlobalAuditLogs() {
             </span>
           </h2>
           <p className="text-xs text-text-secondary mt-1">
-            Chronological audit trail of all task state changes across the application.
+            Chronological audit trail of all task state changes across the
+            application.
           </p>
         </div>
 
@@ -77,8 +91,12 @@ export default function GlobalAuditLogs() {
             disabled={isLoading || isRefetching}
             className="p-2 bg-white/5 hover:bg-white/10 border border-border rounded-md text-text-secondary hover:text-text-primary transition disabled:opacity-50 cursor-pointer flex items-center space-x-1.5"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${isRefetching ? 'animate-spin' : ''}`} />
-            <span className="text-[10px] font-bold uppercase tracking-wider hidden md:inline">Refresh</span>
+            <RefreshCw
+              className={`h-3.5 w-3.5 ${isRefetching ? "animate-spin" : ""}`}
+            />
+            <span className="text-[10px] font-bold uppercase tracking-wider hidden md:inline">
+              Refresh
+            </span>
           </button>
         </div>
       </div>
@@ -87,20 +105,28 @@ export default function GlobalAuditLogs() {
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-20 space-y-4">
           <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-primary border-r-2" />
-          <span className="text-sm text-text-secondary">Retrieving logs from database...</span>
+          <span className="text-sm text-text-secondary">
+            Retrieving logs from database...
+          </span>
         </div>
       ) : error ? (
         <div className="flex flex-col items-center justify-center py-20 text-center space-y-3 border border-dashed border-destructive/20 rounded-lg bg-destructive/5">
           <AlertCircle className="h-8 w-8 text-destructive" />
-          <h4 className="font-bold text-text-primary text-sm">Failed to retrieve logs</h4>
+          <h4 className="font-bold text-text-primary text-sm">
+            Failed to retrieve logs
+          </h4>
           <p className="text-xs text-text-secondary max-w-sm">
-            {error instanceof Error ? error.message : 'Ensure you have proper admin privileges.'}
+            {error instanceof Error
+              ? error.message
+              : "Ensure you have proper admin privileges."}
           </p>
         </div>
       ) : !filteredLogs || filteredLogs.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-border/30 rounded-lg">
           <span className="text-sm text-text-secondary">
-            {searchTerm ? 'No matches found for your search term.' : 'No audit log activities recorded.'}
+            {searchTerm
+              ? "No matches found for your search term."
+              : "No audit log activities recorded."}
           </span>
         </div>
       ) : (
@@ -120,7 +146,10 @@ export default function GlobalAuditLogs() {
                 const isDeleted = log.task_id === null;
 
                 return (
-                  <tr key={log.id} className="hover:bg-white/[0.01] transition duration-150">
+                  <tr
+                    key={log.id}
+                    className="hover:bg-white/[0.01] transition duration-150"
+                  >
                     {/* Timestamp */}
                     <td className="p-4 whitespace-nowrap text-text-secondary font-mono text-[11px]">
                       <div className="flex items-center space-x-1.5">
@@ -132,7 +161,10 @@ export default function GlobalAuditLogs() {
                     {/* Task Title & Status badge */}
                     <td className="p-4">
                       <div className="flex flex-col space-y-1 max-w-[250px] md:max-w-xs">
-                        <span className="font-bold text-text-primary truncate" title={log.task_title}>
+                        <span
+                          className="font-bold text-text-primary truncate"
+                          title={log.task_title}
+                        >
                           {log.task_title}
                         </span>
                         {isDeleted ? (
@@ -151,7 +183,9 @@ export default function GlobalAuditLogs() {
                     <td className="p-4 whitespace-nowrap">
                       <div className="flex items-center space-x-1.5">
                         <User className="h-3.5 w-3.5 text-primary/75" />
-                        <span className="font-semibold text-text-primary">{log.actor}</span>
+                        <span className="font-semibold text-text-primary">
+                          {log.actor}
+                        </span>
                       </div>
                     </td>
 
@@ -159,18 +193,26 @@ export default function GlobalAuditLogs() {
                     <td className="p-4 whitespace-nowrap">
                       {isCreation ? (
                         <div className="flex items-center space-x-2">
-                          <span className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Created as:</span>
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${statusColors.to_do}`}>
+                          <span className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">
+                            Created as:
+                          </span>
+                          <span
+                            className={`px-2 py-0.5 rounded text-[10px] font-bold border ${statusColors.to_do}`}
+                          >
                             {statusLabels.to_do}
                           </span>
                         </div>
                       ) : (
                         <div className="flex items-center space-x-1.5">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${statusColors[log.old_status as TaskStatus]}`}>
+                          <span
+                            className={`px-2 py-0.5 rounded text-[10px] font-bold border ${statusColors[log.old_status as TaskStatus]}`}
+                          >
                             {statusLabels[log.old_status as TaskStatus]}
                           </span>
                           <ArrowRight className="h-3 w-3 text-text-secondary" />
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${statusColors[log.new_status]}`}>
+                          <span
+                            className={`px-2 py-0.5 rounded text-[10px] font-bold border ${statusColors[log.new_status]}`}
+                          >
                             {statusLabels[log.new_status]}
                           </span>
                         </div>

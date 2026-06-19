@@ -1,9 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useTaskAuditLogs } from '../../../services/task/use-tasks';
-import { X, User, Calendar, ArrowRight } from 'lucide-react';
-import { TaskStatus } from '../../../services/task/types';
+import { ArrowRight, Calendar, User, X } from "lucide-react";
+import { TaskStatus } from "../../../services/task/types";
+import { useTaskAuditLogs } from "../../../services/task/use-tasks";
 
 interface TaskAuditLogsProps {
   taskId: number;
@@ -13,31 +12,36 @@ interface TaskAuditLogsProps {
 }
 
 const statusLabels: Record<TaskStatus, string> = {
-  to_do: 'To Do',
-  pending: 'Pending',
-  in_progress: 'In Progress',
-  done: 'Done',
+  to_do: "To Do",
+  pending: "Pending",
+  in_progress: "In Progress",
+  done: "Done",
 };
 
 const statusColors: Record<TaskStatus, string> = {
-  to_do: 'text-text-secondary bg-white/5 border-white/10',
-  pending: 'text-amber-400 bg-amber-400/10 border-amber-400/20',
-  in_progress: 'text-cyan-400 bg-cyan-400/10 border-cyan-400/20',
-  done: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
+  to_do: "text-text-secondary bg-white/5 border-white/10",
+  pending: "text-amber-400 bg-amber-400/10 border-amber-400/20",
+  in_progress: "text-cyan-400 bg-cyan-400/10 border-cyan-400/20",
+  done: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
 };
 
-export default function TaskAuditLogs({ taskId, taskTitle, isOpen, onClose }: TaskAuditLogsProps) {
+export default function TaskAuditLogs({
+  taskId,
+  taskTitle,
+  isOpen,
+  onClose,
+}: TaskAuditLogsProps) {
   const { data: logs, isLoading } = useTaskAuditLogs(taskId, isOpen);
 
   if (!isOpen) return null;
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleString(undefined, {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
     });
   };
 
@@ -49,8 +53,13 @@ export default function TaskAuditLogs({ taskId, taskTitle, isOpen, onClose }: Ta
       {/* Header */}
       <div className="p-6 border-b border-border flex items-center justify-between relative z-10">
         <div>
-          <h3 className="text-lg font-bold text-text-primary">Audit Log Trail</h3>
-          <p className="text-xs text-text-secondary mt-1 max-w-[280px] truncate" title={taskTitle}>
+          <h3 className="text-lg font-bold text-text-primary">
+            Audit Log Trail
+          </h3>
+          <p
+            className="text-xs text-text-secondary mt-1 max-w-[280px] truncate"
+            title={taskTitle}
+          >
             Task: {taskTitle}
           </p>
         </div>
@@ -67,11 +76,15 @@ export default function TaskAuditLogs({ taskId, taskTitle, isOpen, onClose }: Ta
         {isLoading ? (
           <div className="flex flex-col items-center justify-center h-48 space-y-3">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-primary border-r-2" />
-            <span className="text-xs text-text-secondary">Retrieving logs...</span>
+            <span className="text-xs text-text-secondary">
+              Retrieving logs...
+            </span>
           </div>
         ) : !logs || logs.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-48 text-center">
-            <span className="text-sm text-text-secondary">No log records found for this task.</span>
+            <span className="text-sm text-text-secondary">
+              No log records found for this task.
+            </span>
           </div>
         ) : (
           <div className="relative border-l-2 border-border ml-3 pl-6 space-y-8">
@@ -95,25 +108,40 @@ export default function TaskAuditLogs({ taskId, taskTitle, isOpen, onClose }: Ta
                     <div className="bg-[#090D16]/50 border border-border rounded-lg p-3.5 space-y-2">
                       <div className="flex items-center space-x-1.5 text-xs text-text-secondary font-medium">
                         <User className="h-3.5 w-3.5 text-primary" />
-                        <span>Action by: <span className="text-text-primary font-bold">{log.actor}</span></span>
+                        <span>
+                          Action by:{" "}
+                          <span className="text-text-primary font-bold">
+                            {log.actor}
+                          </span>
+                        </span>
                       </div>
 
                       <div className="flex items-center flex-wrap gap-2 text-xs pt-1 border-t border-border/30">
                         {isCreation ? (
                           <div className="flex items-center space-x-2">
-                            <span className="text-text-secondary">Task created and status set to</span>
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${statusColors.to_do}`}>
+                            <span className="text-text-secondary">
+                              Task created and status set to
+                            </span>
+                            <span
+                              className={`px-2 py-0.5 rounded text-[10px] font-bold border ${statusColors.to_do}`}
+                            >
                               {statusLabels.to_do}
                             </span>
                           </div>
                         ) : (
                           <div className="flex items-center space-x-1.5 flex-wrap">
-                            <span className="text-text-secondary">Status transitioned:</span>
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${statusColors[log.old_status as TaskStatus]}`}>
+                            <span className="text-text-secondary">
+                              Status transitioned:
+                            </span>
+                            <span
+                              className={`px-2 py-0.5 rounded text-[10px] font-bold border ${statusColors[log.old_status as TaskStatus]}`}
+                            >
                               {statusLabels[log.old_status as TaskStatus]}
                             </span>
                             <ArrowRight className="h-3 w-3 text-text-secondary" />
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${statusColors[log.new_status]}`}>
+                            <span
+                              className={`px-2 py-0.5 rounded text-[10px] font-bold border ${statusColors[log.new_status]}`}
+                            >
                               {statusLabels[log.new_status]}
                             </span>
                           </div>

@@ -1,4 +1,4 @@
-export type TaskStatus = 'to_do' | 'pending' | 'in_progress' | 'done';
+export type TaskStatus = "to_do" | "pending" | "in_progress" | "done";
 
 export interface Task {
   id: number;
@@ -31,18 +31,21 @@ export interface CreateTaskDTO {
  * Validates if a task can transition from a given status to a target status
  * Following: to_do -> pending -> in_progress -> done
  */
-export const isValidTransition = (from: TaskStatus | null, to: TaskStatus): boolean => {
+export const isValidTransition = (
+  from: TaskStatus | null,
+  to: TaskStatus,
+): boolean => {
   if (from === null) {
-    return to === 'to_do';
+    return to === "to_do";
   }
-  if (from === 'to_do') {
-    return to === 'pending';
+  if (from === "to_do") {
+    return to === "pending";
   }
-  if (from === 'pending') {
-    return to === 'in_progress';
+  if (from === "pending") {
+    return to === "in_progress";
   }
-  if (from === 'in_progress') {
-    return to === 'done';
+  if (from === "in_progress") {
+    return to === "done";
   }
   return false; // 'done' is terminal, or other transitions are invalid
 };

@@ -1,16 +1,15 @@
-'use client';
+"use client";
 
-import React from 'react';
+import { AlertTriangle } from "lucide-react";
+import { Button } from "./button";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
-} from './dialog';
-import { Button } from './button';
-import { AlertTriangle } from 'lucide-react';
+  DialogHeader,
+  DialogTitle,
+} from "./dialog";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -28,8 +27,8 @@ export function ConfirmDialog({
   onOpenChange,
   title,
   description,
-  confirmLabel = 'Delete',
-  cancelLabel = 'Cancel',
+  confirmLabel = "Delete",
+  cancelLabel = "Cancel",
   onConfirm,
   isLoading = false,
 }: ConfirmDialogProps) {
@@ -48,7 +47,9 @@ export function ConfirmDialog({
             <DialogTitle className="text-base">{title}</DialogTitle>
           </div>
           {description && (
-            <DialogDescription className="pl-12">{description}</DialogDescription>
+            <DialogDescription className="pl-12">
+              {description}
+            </DialogDescription>
           )}
         </DialogHeader>
 
@@ -67,7 +68,7 @@ export function ConfirmDialog({
             disabled={isLoading}
             className="cursor-pointer"
           >
-            {isLoading ? 'Deleting...' : confirmLabel}
+            {isLoading ? "Deleting..." : confirmLabel}
           </Button>
         </DialogFooter>
       </DialogContent>
