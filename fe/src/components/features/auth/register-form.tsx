@@ -8,7 +8,7 @@ import { Eye, EyeOff } from 'lucide-react';
 
 export default function RegisterForm() {
   const { register } = useAuth();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -31,7 +31,7 @@ export default function RegisterForm() {
 
     setLoading(true);
     try {
-      await register(email, password);
+      await register(username, password);
     } catch {
       // Toast is already shown in auth-context
     } finally {
@@ -45,20 +45,20 @@ export default function RegisterForm() {
         <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
           Create Account
         </h1>
-        <p className="text-sm text-text-secondary mt-2">Sign up to start shaping your habits</p>
+        <p className="text-sm text-text-secondary mt-2">Sign up to start managing your tasks</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider text-text-secondary mb-2">
-            Email Address
+            Username
           </label>
           <input
-            type="email"
+            type="text"
             required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Choose a username"
             className="w-full px-4 py-3 bg-[#0F172A]/50 border border-border rounded-md text-foreground placeholder:text-gray-600 focus:outline-none focus:border-primary transition"
           />
         </div>

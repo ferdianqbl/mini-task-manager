@@ -25,24 +25,24 @@
   - [x] Verify migration logic structure (seeding script compiles successfully)
 
 ## Frontend Phased Checklist (In Progress)
-- [ ] **Step 8: Update Auth Context & Forms**
-  - [ ] Modify `fe/src/context/auth-context.tsx` to handle cookie session, user role, and async logout
-  - [ ] Modify `fe/src/components/features/auth/login-form.tsx` (change email field to username, update style/labels)
-  - [ ] Modify `fe/src/components/features/auth/register-form.tsx` (change email field to username, update style/labels)
-- [ ] **Step 9: Create Task Services**
-  - [ ] Create Task types (`fe/src/services/task/types.ts`)
-  - [ ] Create TanStack Query hooks for tasks API (`fe/src/services/task/use-tasks.ts`)
-  - [ ] Export services from `fe/src/services/task/index.ts` and `fe/src/services/index.ts`
-- [ ] **Step 10: Build Task Components**
-  - [ ] Create `task-card.tsx` (renders status transitions, delete option, audit log button)
-  - [ ] Create `task-board.tsx` (Kanban board layout with To Do, Pending, In Progress, Done columns)
-  - [ ] Create `task-dialog.tsx` (Task creation modal overlay)
-  - [ ] Create `task-audit-logs.tsx` (Task specific audit log drawer)
-  - [ ] Create `global-audit-logs.tsx` (Admin dashboard log stream table)
-- [ ] **Step 11: Page Implementation & Integration**
-  - [ ] Integrate TaskBoard and headers in `fe/src/app/page.tsx`
-  - [ ] Implement Admin toggle between Task Board and Global Audit Logs
-  - [ ] Sanitize references from Habit Shaper to Mini Task Manager
-- [ ] **Step 12: Compilation and E2E Verification**
-  - [ ] Verify frontend compiles successfully via `npm run build`
+- [x] **Step 8: Update Auth Context & Forms**
+  - [x] Modify `fe/src/context/auth-context.tsx` to handle cookie session, user role, and async logout
+  - [x] Modify `fe/src/components/features/auth/login-form.tsx` (change email field to username, update style/labels)
+  - [x] Modify `fe/src/components/features/auth/register-form.tsx` (change email field to username, update style/labels)
+- [x] **Step 9: Create Task Services**
+  - [x] Create Task types (`fe/src/services/task/types.ts`)
+  - [x] Create TanStack Query hooks for tasks API (`fe/src/services/task/use-tasks.ts`)
+  - [x] Export services from `fe/src/services/task/index.ts` and `fe/src/services/index.ts`
+- [x] **Step 10: Build Task Components**
+  - [x] Create `task-card.tsx` (renders status transitions, delete option, audit log button)
+  - [x] Create `task-board.tsx` (Kanban board layout with To Do, Pending, In Progress, Done columns)
+  - [x] Create `task-dialog.tsx` (Task creation modal overlay)
+  - [x] Create `task-audit-logs.tsx` (Task specific audit log drawer)
+  - [x] Create `global-audit-logs.tsx` (Admin dashboard log stream table)
+- [x] **Step 11: Page Implementation & Integration**
+  - [x] Integrate TaskBoard and headers in `fe/src/app/page.tsx`
+  - [x] Implement Admin toggle between Task Board and Global Audit Logs
+  - [x] Sanitize references from Habit Shaper to Mini Task Manager
+- [/] **Step 12: Compilation and E2E Verification**
+  - [/] Verify frontend compiles successfully via `npm run build`
   - [ ] Run `docker compose up --build` and verify full E2E flow

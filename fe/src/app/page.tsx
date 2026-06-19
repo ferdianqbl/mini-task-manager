@@ -1,15 +1,24 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../context/auth-context';
-import HabitList from '../components/features/habits/habit-list';
-import GoalList from '../components/features/goals/goal-list';
-import { LogOut, Flame } from 'lucide-react';
+import { useTasks } from '../services/task/use-tasks';
+import TaskBoard from '../components/features/tasks/task-board';
+import TaskDialog from '../components/features/tasks/task-dialog';
+import TaskAuditLogs from '../components/features/tasks/task-audit-logs';
+import GlobalAuditLogs from '../components/features/tasks/global-audit-logs';
+import { LogOut, CheckSquare, Plus, Activity, Columns } from 'lucide-react';
 
 export default function DashboardPage() {
-  const { user, logout, isLoading } = useAuth();
+  const { user, logout, isLoading: isAuthLoading } = useAuth();
+  const { data: tasks = [], isLoading: isTasksLoading } = useTasks();
+  
+  // State for modals and panels
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'board' | 'logs'>('board');
+  const [logDetails, setLogDetails] = useState<{ id: number; title: string } | null>(null);
 
-  if (isLoading) {
+  if (isAuthLoading) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-[#090D16] space-y-4">
         <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-primary border-r-2" />
@@ -22,6 +31,10 @@ export default function DashboardPage() {
     return null; // Let AuthProvider handle redirect
   }
 
+  const handleOpenLogs = (id: number, title: string) => {
+    setLogDetails({ id, title });
+  };
+
   return (
     <div className="min-h-screen bg-[#090D16] text-text-primary relative overflow-hidden flex flex-col">
       {/* Glow backgrounds */}
@@ -33,17 +46,30 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
             <div className="p-1.5 rounded-lg bg-gradient-to-br from-primary to-cyan-500 shadow-md shadow-primary/20">
-              <Flame className="h-5 w-5 text-[#090D16] fill-current" />
+              <CheckSquare className="h-5 w-5 text-[#090D16] fill-current" />
             </div>
             <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-              Habit Shaper
+              Mini Task Manager
             </span>
           </div>
 
           <div className="flex items-center space-x-4">
-            <span className="hidden sm:inline-block text-xs font-semibold text-text-secondary bg-white/5 px-3 py-1.5 rounded-full border border-border">
-              Logged in: <span className="text-text-primary font-bold">{user.email}</span>
+            {/* Create Task Button */}
+            <button
+              onClick={() => setIsCreateOpen(true)}
+              className="inline-flex items-center space-x-1.5 text-xs font-bold text-primary-foreground bg-primary hover:bg-primary/95 px-4 py-2 rounded-md shadow-lg shadow-primary/10 transition cursor-pointer"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Create Task</span>
+            </button>
+
+            <span className="hidden md:inline-block text-xs font-semibold text-text-secondary bg-white/5 px-3 py-1.5 rounded-full border border-border">
+              Logged in: <span className="text-text-primary font-bold">{user.username}</span>
+              <span className="ml-1.5 px-1.5 py-0.5 bg-primary/15 text-primary text-[9px] font-bold rounded-sm border border-primary/25 font-mono">
+                {user.role}
+              </span>
             </span>
+
             <button
               onClick={logout}
               className="inline-flex items-center space-x-1.5 text-xs font-bold text-text-secondary hover:text-accent-break bg-white/5 hover:bg-accent-break/10 px-3.5 py-2 rounded-md border border-border hover:border-accent-break/20 transition cursor-pointer"
@@ -55,27 +81,66 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      {/* Dashboard body grid */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: Goals widget */}
-          <div className="lg:col-span-4 space-y-6">
-            <div className="bg-card border border-border rounded-xl p-6 shadow-xl backdrop-blur-md">
-              <GoalList />
-            </div>
-          </div>
-
-          {/* Right Column: Habits tracking lists */}
-          <div className="lg:col-span-8 bg-card border border-border rounded-xl p-6 shadow-xl backdrop-blur-md">
-            <HabitList />
+      {/* Admin Tab Switching Toolbar */}
+      {user.role === 'ADMIN' && (
+        <div className="bg-[#0B0F19]/40 border-b border-border/60">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center space-x-4">
+            <button
+              onClick={() => setActiveTab('board')}
+              className={`inline-flex items-center space-x-1.5 text-xs font-bold px-3 py-1.5 rounded-md border transition cursor-pointer ${
+                activeTab === 'board'
+                  ? 'bg-primary/10 border-primary/30 text-primary'
+                  : 'bg-transparent border-transparent text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              <Columns className="h-3.5 w-3.5" />
+              <span>Task Boards</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('logs')}
+              className={`inline-flex items-center space-x-1.5 text-xs font-bold px-3 py-1.5 rounded-md border transition cursor-pointer ${
+                activeTab === 'logs'
+                  ? 'bg-primary/10 border-primary/30 text-primary'
+                  : 'bg-transparent border-transparent text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              <Activity className="h-3.5 w-3.5" />
+              <span>System Audit Stream</span>
+            </button>
           </div>
         </div>
+      )}
+
+      {/* Main Content Area */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+        {activeTab === 'logs' && user.role === 'ADMIN' ? (
+          <GlobalAuditLogs />
+        ) : (
+          <TaskBoard 
+            tasks={tasks} 
+            isLoading={isTasksLoading} 
+            onOpenLogs={handleOpenLogs} 
+          />
+        )}
       </main>
+
+      {/* Modal Dialogs / Slide Overs */}
+      <TaskDialog 
+        isOpen={isCreateOpen} 
+        onClose={() => setIsCreateOpen(false)} 
+      />
+
+      <TaskAuditLogs
+        isOpen={logDetails !== null}
+        taskId={logDetails?.id || 0}
+        taskTitle={logDetails?.title || ''}
+        onClose={() => setLogDetails(null)}
+      />
 
       {/* Simple accessible footer */}
       <footer className="border-t border-border bg-[#0B0F19]/40 py-4 text-center mt-12">
         <p className="text-[11px] text-text-secondary font-medium uppercase tracking-wider">
-          Habit Shaper &copy; 2026. Keep shaping positive routines.
+          Mini Task Manager &copy; 2026. Keep operations organized.
         </p>
       </footer>
     </div>

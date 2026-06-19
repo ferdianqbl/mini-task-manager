@@ -8,72 +8,55 @@ import { toast } from 'sonner';
 
 interface User {
   id: number;
-  email: string;
+  username: string;
+  role: 'ADMIN' | 'USER';
 }
 
 interface AuthContextType {
   user: User | null;
-  token: string | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  login: (username: string, password: string) => Promise<void>;
+  register: (username: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
 
-  // Load token on mount
+  // Verify session on mount or route changes
   useEffect(() => {
     async function loadUser() {
-      const storedToken = localStorage.getItem('token');
-      if (storedToken) {
-        setToken(storedToken);
-        try {
-          // Verify token against /users/me
-          const res = await api.get('/api/users/me', {
-            headers: { Authorization: `Bearer ${storedToken}` }
-          });
-          setUser(res.data.data.user);
-        } catch (err) {
-          console.error('Session expired or invalid token:', err);
-          localStorage.removeItem('token');
-          setToken(null);
-          setUser(null);
-          // Redirect if not already on auth pages
-          if (pathname !== '/login' && pathname !== '/register') {
-            toast.error('Session expired. Please sign in again.');
-            router.push('/login');
-          }
-        }
-      } else {
-        // No token, redirect to login if attempting guarded page
+      try {
+        const res = await api.get('/api/users/me');
+        setUser(res.data.data.user);
+      } catch (err) {
+        console.error('Session verification failed:', err);
+        setUser(null);
+        // Redirect to login if attempting to access a guarded page
         if (pathname !== '/login' && pathname !== '/register') {
           router.push('/login');
         }
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     }
     loadUser();
   }, [pathname, router]);
 
-  const login = async (email: string, password: string) => {
+  const login = async (username: string, password: string) => {
     try {
-      const res = await api.post('/api/auth/login', { email, password });
-      const { user: userProfile, token: jwtToken } = res.data.data;
+      const res = await api.post('/api/auth/login', { username, password });
+      const { user: userProfile } = res.data.data;
 
-      localStorage.setItem('token', jwtToken);
-      setToken(jwtToken);
       setUser(userProfile);
 
       toast.success('Welcome back!', {
-        description: `Signed in as ${userProfile.email}`,
+        description: `Signed in as ${userProfile.username}`,
       });
       router.push('/');
     } catch (err) {
@@ -85,38 +68,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const register = async (email: string, password: string) => {
+  const register = async (username: string, password: string) => {
     try {
-      const res = await api.post('/api/auth/register', { email, password });
-      const { user: userProfile, token: jwtToken } = res.data.data;
+      const res = await api.post('/api/auth/register', { username, password });
+      const { user: userProfile } = res.data.data;
 
-      localStorage.setItem('token', jwtToken);
-      setToken(jwtToken);
       setUser(userProfile);
 
       toast.success('Account created!', {
-        description: 'Welcome to Habit Shaper. Start tracking your habits!',
+        description: 'Welcome to Mini Task Manager. Start managing your tasks!',
       });
       router.push('/');
     } catch (err) {
       const msg = axios.isAxiosError(err)
-        ? (err.response?.data as { message?: string })?.message || err.message || 'Registration failed. Email might already be taken.'
-        : 'Registration failed. Email might already be taken.';
+        ? (err.response?.data as { message?: string })?.message || err.message || 'Registration failed. Username might already be taken.'
+        : 'Registration failed. Username might already be taken.';
       toast.error('Registration failed', { description: msg });
       throw new Error(msg);
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    setToken(null);
+  const logout = async () => {
+    try {
+      await api.post('/api/auth/logout');
+    } catch (err) {
+      console.error('Logout failed on backend:', err);
+    }
     setUser(null);
     toast.success('Signed out successfully');
     router.push('/login');
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
