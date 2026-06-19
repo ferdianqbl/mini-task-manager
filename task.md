@@ -1,5 +1,6 @@
-# Backend Phased Roadmap Checklist
+# Mini Task Manager Roadmap Checklist
 
+## Backend Phased Checklist (Completed)
 - [x] **Step 1: Setup Workspace Scaffolding**
   - [x] Delete unused backend boilerplate modules (`goal/`, `habit/`)
   - [x] Delete unused backend routes (`goal.routes.ts`, `habit.routes.ts`)
@@ -23,26 +24,25 @@
   - [x] Verify build compiles
   - [x] Verify migration logic structure (seeding script compiles successfully)
 
----
-
-# Frontend Phased Roadmap Checklist
-
-- [x] **Step 7: Setup Frontend Workspace Scaffolding**
-  - [x] Delete unused frontend boilerplate components (`goals/`, `habits/`)
-  - [x] Delete unused frontend services (`goal/`, `habit/`)
-  - [x] Clean up and configure API Axios instance (`fe/src/lib/api.ts`) with `withCredentials = true`
-- [/] **Step 8: Update Auth Context & forms for Username/Cookies**
-  - [ ] Update `fe/src/context/auth-context.tsx` to handle username, role, and cookie-based status checks
-  - [ ] Update auth forms (`login-form.tsx`, `register-form.tsx`) to use username inputs
-- [ ] **Step 9: Implement Task API Services & Hooks**
+## Frontend Phased Checklist (In Progress)
+- [ ] **Step 8: Update Auth Context & Forms**
+  - [ ] Modify `fe/src/context/auth-context.tsx` to handle cookie session, user role, and async logout
+  - [ ] Modify `fe/src/components/features/auth/login-form.tsx` (change email field to username, update style/labels)
+  - [ ] Modify `fe/src/components/features/auth/register-form.tsx` (change email field to username, update style/labels)
+- [ ] **Step 9: Create Task Services**
   - [ ] Create Task types (`fe/src/services/task/types.ts`)
-  - [ ] Create TanStack React Query hooks for tasks (`fe/src/services/task/use-tasks.ts`)
-- [ ] **Step 10: Build Task Dialog, Cards & Logs components**
-  - [ ] Create task creation modal (`fe/src/components/features/tasks/task-dialog.tsx`)
-  - [ ] Create task card component (`fe/src/components/features/tasks/task-card.tsx`) with sequential action buttons
-  - [ ] Create single task audit log modal (`fe/src/components/features/tasks/task-audit-logs.tsx`)
-  - [ ] Create admin global audit logs panel (`fe/src/components/features/tasks/global-audit-logs.tsx`)
-- [ ] **Step 11: Implement Main Dashboard page**
-  - [ ] Update dashboard page (`fe/src/app/page.tsx`) with column layout, admin badging, and routing guards
-- [ ] **Step 12: Compilation and Verification**
-  - [ ] Verify frontend build compiles cleanly
+  - [ ] Create TanStack Query hooks for tasks API (`fe/src/services/task/use-tasks.ts`)
+  - [ ] Export services from `fe/src/services/task/index.ts` and `fe/src/services/index.ts`
+- [ ] **Step 10: Build Task Components**
+  - [ ] Create `task-card.tsx` (renders status transitions, delete option, audit log button)
+  - [ ] Create `task-board.tsx` (Kanban board layout with To Do, Pending, In Progress, Done columns)
+  - [ ] Create `task-dialog.tsx` (Task creation modal overlay)
+  - [ ] Create `task-audit-logs.tsx` (Task specific audit log drawer)
+  - [ ] Create `global-audit-logs.tsx` (Admin dashboard log stream table)
+- [ ] **Step 11: Page Implementation & Integration**
+  - [ ] Integrate TaskBoard and headers in `fe/src/app/page.tsx`
+  - [ ] Implement Admin toggle between Task Board and Global Audit Logs
+  - [ ] Sanitize references from Habit Shaper to Mini Task Manager
+- [ ] **Step 12: Compilation and E2E Verification**
+  - [ ] Verify frontend compiles successfully via `npm run build`
+  - [ ] Run `docker compose up --build` and verify full E2E flow
