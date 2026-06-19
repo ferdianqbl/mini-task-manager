@@ -31,6 +31,7 @@ erDiagram
 
     tasks {
         int id PK
+        int user_id FK "ON DELETE CASCADE"
         string title
         text description
         enum status "to_do / pending / in_progress / done"
@@ -48,6 +49,7 @@ erDiagram
         timestamp changed_at
     }
 
+    users ||--o{ tasks : "creates"
     users ||--o{ audit_logs : "creates actions (actor = username)"
     tasks ||--o{ audit_logs : "tracks transitions"
 ```
@@ -66,11 +68,13 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS tasks (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
     title VARCHAR(255) NOT NULL,
     description TEXT,
     status ENUM('to_do', 'pending', 'in_progress', 'done') NOT NULL DEFAULT 'to_do',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS audit_logs (
@@ -92,13 +96,13 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 - [ ] **Step 1: Setup Workspace scaffolding**
   - Clean up goals and habits modules from backend and frontend, preserving `auth` and `user` configurations.
 - [ ] **Step 2: Database Schema & Migration**
-  - Update DDL in `be/src/db/schema.sql` (defining `users` with `role`, `tasks`, and `audit_logs`).
+  - Update DDL in `be/src/db/schema.sql` (defining `users`, `tasks` with `user_id`, and `audit_logs`).
   - Rewrite `be/src/db/migrate.ts` to wait for DB connection and seed default tasks, standard user accounts, a default administrator `admin` (password: `admin123`, role: `ADMIN`), and initial audit logs.
 - [ ] **Step 3: Backend Task Module**
   - Define interfaces in `be/src/modules/task/task.types.ts`.
-  - Write SQL repository query methods in `be/src/modules/task/task.repository.ts` implementing MySQL pool transactions, including the global audit logs fetch method.
+  - Write SQL repository query methods in `be/src/modules/task/task.repository.ts` implementing MySQL pool transactions, task ownership clauses (`WHERE tasks.user_id = ?` for `USER`), and log filters (`WHERE actor = ?` for `USER`).
   - Implement sequential transition checks and idempotency guards in `be/src/modules/task/task.service.ts`.
-  - Create REST controller mapping in `be/src/modules/task/task.controller.ts` and routes in `be/src/routes/task.routes.ts` (protect endpoints, mount `/global-audit-logs` guarded by `requireAdmin`).
+  - Create REST controller mapping in `be/src/modules/task/task.controller.ts` and routes in `be/src/routes/task.routes.ts`.
 - [ ] **Step 4: Frontend Auth Pages**
   - Adapt `fe/src/app/login/page.tsx` and `fe/src/app/register/page.tsx` forms to authenticate the user and save token + role payload in `localStorage`.
 - [ ] **Step 5: Frontend Task Service & Dashboard**
@@ -107,6 +111,6 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 - [ ] **Step 6: Task Actions & Transition Buttons**
   - Display task cards grouped by status. Add sequential progression buttons mapping to PUT status requests.
 - [ ] **Step 7: Admin Global Logs Modal/Drawer**
-  - Create `global-audit-logs.tsx` rendered conditionally only if the user has `ADMIN` role. This queries the global log endpoint and displays logs in a table.
+  - Create `global-audit-logs.tsx` rendered conditionally only if the user has `ADMIN` role.
 - [ ] **Step 8: Verification & Compilation Checks**
   - Run containers via `docker compose up`. Check TypeScript compilations and run audit-trail test cases.

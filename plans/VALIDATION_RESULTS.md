@@ -13,6 +13,10 @@ This document lists the validation rules and verification checkpoints for the **
 | **Role Management** | User roles (`USER` and `ADMIN`) specified in JWT token | `auth.controller.ts` | `auth-context.tsx` |
 | **Role Management** | Global Audit Logs fetch blocked for standard users (returns `403 Forbidden`) | `auth.middleware.ts` | `use-tasks.ts` |
 | **Role Management** | Global Audit Logs fetch permitted for administrators | `auth.middleware.ts` | `global-audit-logs.tsx` |
+| **Task Ownership** | Standard users can only view/transition/delete their own tasks | `task.repository.ts` | `page.tsx` |
+| **Task Ownership** | Administrators can view/transition/delete tasks of any user | `task.repository.ts` | `page.tsx` |
+| **Log Ownership** | Standard users can only view their own log actions ("self log") | `task.repository.ts` | `task-audit-logs.tsx` |
+| **Log Ownership** | Administrators can view all task log actions regardless of actor | `task.repository.ts` | `task-audit-logs.tsx` |
 | **Task Management** | Create a task (Title + Description), status initialized as `to_do` | `task.service.ts` | `task-dialog.tsx` |
 | **Task Management** | List all active tasks on dashboard | `task.controller.ts` | `page.tsx` |
 | **Task Management** | Transition status through strictly sequential path | `task.service.ts` | `task-card.tsx` |

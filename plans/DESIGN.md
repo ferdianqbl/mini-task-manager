@@ -11,7 +11,9 @@ To provide a premium internal dashboard that minimizes operational mistakes and 
 2.  **Status Visual Clarity**: Clear color distinctions for each task state so columns or statuses are readable at a distance.
 3.  **Contextual Actions**: Disable or hide buttons that would result in invalid state transitions, guiding users along the sequential path.
 4.  **Visible Audit History**: Enable quick access to chronological logs (per task) via clean modal windows with glassmorphic overlays.
-5.  **Role-Based UI Control**: Conditionally render administrative tools (e.g. "Global Logs" dashboard button) only if the user has the `ADMIN` role.
+5.  **Role-Based Data Separation**:
+    *   `USER` accounts see and audit only **their own** tasks and actions.
+    *   `ADMIN` accounts see all tasks from all users (with user attribution badges) and all log details globally.
 
 ---
 
@@ -62,11 +64,13 @@ We define a custom theme in `src/app/globals.css` using Tailwind v4's CSS-first 
 ### B. Dashboard Layout
 *   **Header**:
     *   Left side: App logo + Title.
-    *   Right side: Pre-labeled badge displaying role (e.g. `User` or `Admin`), user's username, and a "Logout" button.
-    *   **Admin-only link**: If authenticated as `ADMIN`, display a prominent "Global Logs" button/icon in the header navigation.
+    *   Right side: Pre-labeled badge displaying role (`USER` or `ADMIN`), user's username, and a "Logout" button.
+    *   **Admin-only link**: If authenticated as `ADMIN`, display a prominent "Global Logs" button in the header.
 *   **Grid (Screens >= 1024px)**:
-    *   A 4-column Kanban board layout where each column represents a status:
+    *   A 4-column Kanban board layout:
         $$\text{To Do} \rightarrow \text{Pending} \rightarrow \text{In Progress} \rightarrow \text{Done}$$
+    *   *User view:* Displays only cards owned by the logged-in user.
+    *   *Admin view:* Displays all tasks from all users (each card features a small, subtle badge: `Owner: [username]`).
 
 ---
 
@@ -77,7 +81,9 @@ We use lightweight custom components built on Radix UI primitives:
 *   **Audit Log Modal**: Centered popover dialog using `@radix-ui/react-dialog` displaying:
     *   A header indicating: "Audit Logs for: [Task Title]"
     *   A vertical timeline list of logs, sorted chronologically.
-*   **Admin Global Logs Panel**: A dedicated full-screen drawer or modal accessible only to `ADMIN` users displaying a scrolling table/feed of all audit logs across all users, sorted with the latest transitions showing first.
+    *   *User view:* displays only logs created by themselves.
+    *   *Admin view:* displays logs created by any user (each log specifies the actor's username).
+*   **Admin Global Logs Panel**: A dedicated full-screen drawer or modal accessible only to `ADMIN` users displaying a scrolling feed of all audit logs across all users.
 
 ---
 
@@ -85,4 +91,3 @@ We use lightweight custom components built on Radix UI primitives:
 
 *   **State Transition Pulse**: Successfully clicking a transition button triggers a brief color pulse before updating the card columns.
 *   **Card Hover Expansion**: Task cards hover-elevate by `scale-[1.015]` and borders brighten slightly (`hover:border-white/10`) to indicate interactivity.
-*   **Role Highlight**: The `ADMIN` badge in the header flashes a subtle glow animation on initial mount to emphasize administration privileges.

@@ -40,10 +40,12 @@ Endpoints marked with **Auth? Yes** expect a JSON Web Token (JWT) sent via HTTP 
 Authorization: Bearer <your_jwt_token_here>
 ```
 *   The token is verified by the backend using a secure middleware.
-*   Once verified, the user's username is bound to the request and automatically used as the `actor` in audit log operations.
-*   The user's role (`ADMIN` or `USER`) is validated when accessing guarded admin routes.
+*   Once verified, the user's username and ID are bound to the request.
+*   The user's role (`ADMIN` or `USER`) is validated when accessing routes:
+    *   `USER` can only access tasks where `tasks.user_id = logged_in_user.id`.
+    *   `ADMIN` can access any task.
 *   Failure to provide a valid token results in a `401 Unauthorized` response.
-*   Failure to pass role checks (e.g. standard `USER` calling an `ADMIN` route) results in a `403 Forbidden` response.
+*   Failure to pass ownership or role checks results in a `403 Forbidden` response.
 
 ---
 
@@ -54,11 +56,11 @@ Authorization: Bearer <your_jwt_token_here>
 | **Authentication** | `POST` | `/api/auth/register` | No | *Any* | Create a new user profile & return token | `201` |
 | **Authentication** | `POST` | `/api/auth/login` | No | *Any* | Authenticate user & return token | `200` |
 | **User Profile** | `GET` | `/api/users/me` | **Yes** | *Any* | Fetch current logged-in user profile | `200` |
-| **Tasks** | `GET` | `/api/tasks` | **Yes** | *Any* | Retrieve all active tasks | `200` |
-| **Tasks** | `POST` | `/api/tasks` | **Yes** | *Any* | Create a task (starts as `to_do`) | `201` |
-| **Tasks** | `PUT` | `/api/tasks/:id/status`| **Yes** | *Any* | Transition task status | `200` |
-| **Tasks** | `DELETE` | `/api/tasks/:id` | **Yes** | *Any* | Delete a task (audit logs remain) | `200` |
-| **Tasks** | `GET` | `/api/tasks/:id/audit-logs`| **Yes** | *Any* | Fetch chronological task audit logs | `200` |
+| **Tasks** | `GET` | `/api/tasks` | **Yes** | *Any* | Retrieve active tasks (filtered by user unless ADMIN) | `200` |
+| **Tasks** | `POST` | `/api/tasks` | **Yes** | *Any* | Create a task (starts as `to_do`, owned by user) | `201` |
+| **Tasks** | `PUT` | `/api/tasks/:id/status`| **Yes** | *Any* | Transition status (guarded by ownership/role) | `200` |
+| **Tasks** | `DELETE` | `/api/tasks/:id` | **Yes** | *Any* | Delete task (guarded by ownership/role) | `200` |
+| **Tasks** | `GET` | `/api/tasks/:id/audit-logs`| **Yes** | *Any* | Fetch task audit logs (filtered to self unless ADMIN) | `200` |
 | **Tasks** | `GET` | `/api/tasks/global-audit-logs`| **Yes** | **ADMIN** | Fetch **all** audit logs in the system | `200` |
 
 ---
@@ -123,7 +125,8 @@ Authorization: Bearer <your_jwt_token_here>
 
 #### `GET /api/tasks`
 *   **Headers**: `Authorization: Bearer <token>`
-*   **Success Response (200 OK)**:
+*   **Success Response (200 OK - Standard User)**:
+    *(Returns only tasks owned by this user)*
     ```json
     {
       "success": true,
@@ -132,6 +135,7 @@ Authorization: Bearer <your_jwt_token_here>
       "data": [
         {
           "id": 1,
+          "user_id": 1,
           "title": "Prepare Invoice",
           "description": "Send June invoice to client.",
           "status": "pending",
@@ -141,74 +145,42 @@ Authorization: Bearer <your_jwt_token_here>
       ]
     }
     ```
-
-#### `POST /api/tasks`
-*   **Headers**: `Authorization: Bearer <token>`
-*   **Request Body**:
-    ```json
-    {
-      "title": "Setup Server Logs",
-      "description": "Configure logrotate for Express server."
-    }
-    ```
-*   **Success Response (201 Created)**:
-    ```json
-    {
-      "success": true,
-      "code": 201,
-      "message": "Task created successfully.",
-      "data": {
-        "id": 3,
-        "title": "Setup Server Logs",
-        "description": "Configure logrotate for Express server.",
-        "status": "to_do",
-        "created_at": "2026-06-19T03:30:00.000Z",
-        "updated_at": "2026-06-19T03:30:00.000Z"
-      }
-    }
-    ```
-
-#### `PUT /api/tasks/:id/status`
-*   **Headers**: `Authorization: Bearer <token>`
-*   **Request Body**:
-    ```json
-    {
-      "status": "pending"
-    }
-    ```
-*   **Success Response (200 OK - Successful Transition)**:
+*   **Success Response (200 OK - Admin)**:
+    *(Returns all tasks with creator username details)*
     ```json
     {
       "success": true,
       "code": 200,
-      "message": "Task status updated successfully.",
-      "data": {
-        "id": 3,
-        "title": "Setup Server Logs",
-        "status": "pending",
-        "created_at": "2026-06-19T03:30:00.000Z",
-        "updated_at": "2026-06-19T03:40:00.000Z"
-      }
-    }
-    ```
-
-#### `DELETE /api/tasks/:id`
-*   **Headers**: `Authorization: Bearer <token>`
-*   **Success Response (200 OK)**:
-    ```json
-    {
-      "success": true,
-      "code": 200,
-      "message": "Task deleted successfully.",
-      "data": {
-        "id": 3
-      }
+      "message": "Tasks list retrieved successfully.",
+      "data": [
+        {
+          "id": 1,
+          "user_id": 1,
+          "title": "Prepare Invoice",
+          "description": "Send June invoice to client.",
+          "status": "pending",
+          "creator_username": "johndoe",
+          "created_at": "2026-06-19T03:00:00.000Z",
+          "updated_at": "2026-06-19T03:10:00.000Z"
+        },
+        {
+          "id": 2,
+          "user_id": 2,
+          "title": "Setup Server Logs",
+          "description": "Configure logrotate.",
+          "status": "to_do",
+          "creator_username": "jane.smith",
+          "created_at": "2026-06-19T03:30:00.000Z",
+          "updated_at": "2026-06-19T03:30:00.000Z"
+        }
+      ]
     }
     ```
 
 #### `GET /api/tasks/:id/audit-logs`
 *   **Headers**: `Authorization: Bearer <token>`
-*   **Success Response (200 OK)**:
+*   **Success Response (200 OK - Standard User)**:
+    *(Returns only logs where actor is the current user)*
     ```json
     {
       "success": true,
@@ -217,60 +189,42 @@ Authorization: Bearer <your_jwt_token_here>
       "data": [
         {
           "id": 10,
-          "task_id": 3,
-          "task_title": "Setup Server Logs",
+          "task_id": 1,
+          "task_title": "Prepare Invoice",
           "actor": "johndoe",
           "old_status": null,
           "new_status": "to_do",
-          "changed_at": "2026-06-19T03:30:00.000Z"
+          "changed_at": "2026-06-19T03:00:00.000Z"
         }
       ]
     }
     ```
-
----
-
-### 3. Admin Audits
-
-#### `GET /api/tasks/global-audit-logs`
-Retrieves a global stream of all status changes across the entire system.
-
-*   **Headers**: `Authorization: Bearer <token>` *(Token must have role set to `ADMIN`)*
-*   **Success Response (200 OK)**:
+*   **Success Response (200 OK - Admin)**:
+    *(Returns all logs for that task regardless of actor)*
     ```json
     {
       "success": true,
       "code": 200,
-      "message": "Global audit logs retrieved successfully.",
+      "message": "Audit logs retrieved successfully.",
       "data": [
         {
           "id": 10,
-          "task_id": 3,
-          "task_title": "Setup Server Logs",
+          "task_id": 1,
+          "task_title": "Prepare Invoice",
           "actor": "johndoe",
           "old_status": null,
           "new_status": "to_do",
-          "changed_at": "2026-06-19T03:30:00.000Z"
+          "changed_at": "2026-06-19T03:00:00.000Z"
         },
         {
           "id": 11,
           "task_id": 1,
           "task_title": "Prepare Invoice",
-          "actor": "adminuser",
-          "old_status": "pending",
-          "new_status": "in_progress",
-          "changed_at": "2026-06-19T03:35:00.000Z"
+          "actor": "jane.smith",
+          "old_status": "to_do",
+          "new_status": "pending",
+          "changed_at": "2026-06-19T03:10:00.000Z"
         }
       ]
     }
     ```
-*   **Errors**:
-    *   `403 Forbidden` — Token verified but user lacks `ADMIN` privileges.
-        ```json
-        {
-          "success": false,
-          "code": 403,
-          "message": "Forbidden. This resource requires administrator privileges.",
-          "data": null
-        }
-        ```

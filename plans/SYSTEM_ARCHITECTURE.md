@@ -55,7 +55,7 @@ fe/
     │       └── tasks/
     │           ├── task-card.tsx       # Renders task title, status badge & next-state buttons
     │           ├── task-dialog.tsx     # Modal to add a new task
-    │           ├── task-audit-logs.tsx # Modal to display single task audit logs
+    │           ├── task-audit-logs.tsx # Modal to display task logs (filtered by user context)
     │           └── global-audit-logs.tsx # Modal/Panel to display all audit logs (Admin only)
     ├── context/
     │   └── auth-context.tsx  # Coordinates user login/registration tokens and role
@@ -123,6 +123,7 @@ Orchestrated using `compose.yml` on a shared bridge network (`task-manager-netwo
              │ (healthcheck check)  │                      │
              └──────────────────────┴──────────────────────┘
 ```
-
-*   **Database Health Check**: The database container exposes a health check ping. The backend container depends on this health check being healthy (`condition: service_healthy`) before booting, preventing startup crashes.
-*   **Persistence**: MySQL writes to a named volume `task-manager-db-data` to preserve tasks and audit logs across containers being stopped.
+*   **Data Integrity & Filters**: 
+    *   The backend enforces task query restrictions inside `task.repository.ts`.
+    *   Queries for standard users (`USER` role) append `WHERE tasks.user_id = ?` for tasks and `WHERE actor = ?` for audit logs.
+    *   `ADMIN` queries bypass these clauses.
