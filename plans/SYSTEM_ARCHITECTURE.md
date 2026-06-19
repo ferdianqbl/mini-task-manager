@@ -11,10 +11,10 @@ This document breaks down the technology stack, library details, folder structur
 *   **Styling**: **Tailwind CSS v4** & **Radix UI** primitives.
 *   **Libraries**:
     *   `@tanstack/react-query` — Client caching and API state synchronization.
-    *   `@radix-ui/react-dialog` — Accessible centered modal overlays for viewing task audit logs.
+    *   `@radix-ui/react-dialog` — Accessible centered modal overlays for viewing task-specific and global audit logs.
     *   `sonner` — Lightweight confirmation and error toast notifications.
     *   `axios` — Promise-based HTTP client. Features an interceptor to automatically attach JWT header from `localStorage`.
-    *   `lucide-react` — Accessible vector SVG icons (e.g. `ClipboardList`, `CheckCircle`, `Calendar`, `History`, `User`, `LogIn`, `LogOut`).
+    *   `lucide-react` — Accessible vector SVG icons (e.g. `ClipboardList`, `CheckCircle`, `Calendar`, `History`, `User`, `LogIn`, `LogOut`, `Database`).
 
 ### B. Backend Service (`be/`)
 *   **Runtime**: **Node.js** with **Express** & **TypeScript** - Binds to port `5001`.
@@ -55,16 +55,17 @@ fe/
     │       └── tasks/
     │           ├── task-card.tsx       # Renders task title, status badge & next-state buttons
     │           ├── task-dialog.tsx     # Modal to add a new task
-    │           └── task-audit-logs.tsx # Modal to display task audit logs
+    │           ├── task-audit-logs.tsx # Modal to display single task audit logs
+    │           └── global-audit-logs.tsx # Modal/Panel to display all audit logs (Admin only)
     ├── context/
-    │   └── auth-context.tsx  # Coordinates user login/registration tokens
+    │   └── auth-context.tsx  # Coordinates user login/registration tokens and role
     ├── lib/
     │   ├── api.ts            # Axios configuration & JWT headers injector interceptor
     │   └── utils.ts          # Merging Tailwind classes
     └── services/
         └── task/             # Task API queries and React Query hooks
             ├── index.ts      # Exporter
-            └── use-tasks.ts  # TanStack query hooks for tasks
+            └── use-tasks.ts  # TanStack query hooks for tasks and global logs
 ```
 
 ### B. Backend (`be/`)
@@ -83,10 +84,10 @@ be/
     │   ├── index.ts          # Mounts route sub-directories
     │   ├── auth.routes.ts    # Authentication API paths
     │   ├── user.routes.ts    # User profile API paths
-    │   └── task.routes.ts    # Routes for Tasks CRUD & log fetch
+    │   └── task.routes.ts    # Routes for Tasks CRUD, log fetch, and admin global logs
     └── modules/
         ├── auth/
-        │   ├── auth.middleware.ts # JWT authentication guard
+        │   ├── auth.middleware.ts # JWT authorization & RBAC requireAdmin middleware
         │   ├── auth.controller.ts # Login/register HTTP endpoint mapping
         │   └── auth.service.ts    # Token validation and signers
         ├── user/

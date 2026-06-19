@@ -41,22 +41,25 @@ Authorization: Bearer <your_jwt_token_here>
 ```
 *   The token is verified by the backend using a secure middleware.
 *   Once verified, the user's username is bound to the request and automatically used as the `actor` in audit log operations.
-*   Failure to provide a valid token results in a `401 Unauthorized` response envelope.
+*   The user's role (`ADMIN` or `USER`) is validated when accessing guarded admin routes.
+*   Failure to provide a valid token results in a `401 Unauthorized` response.
+*   Failure to pass role checks (e.g. standard `USER` calling an `ADMIN` route) results in a `403 Forbidden` response.
 
 ---
 
 ## 📊 Endpoint Summary
 
-| Route Category | Method | Path | Auth? | Description | Success Code |
-| :--- | :---: | :--- | :---: | :--- | :---: |
-| **Authentication** | `POST` | `/api/auth/register` | No | Create a new user profile & return token | `201` |
-| **Authentication** | `POST` | `/api/auth/login` | No | Authenticate user & return token | `200` |
-| **User Profile** | `GET` | `/api/users/me` | **Yes** | Fetch current logged-in user profile | `200` |
-| **Tasks** | `GET` | `/api/tasks` | **Yes** | Retrieve all active tasks | `200` |
-| **Tasks** | `POST` | `/api/tasks` | **Yes** | Create a task (starts as `to_do`) | `201` |
-| **Tasks** | `PUT` | `/api/tasks/:id/status`| **Yes** | Transition task status | `200` |
-| **Tasks** | `DELETE` | `/api/tasks/:id` | **Yes** | Delete a task (audit logs remain) | `200` |
-| **Tasks** | `GET` | `/api/tasks/:id/audit-logs`| **Yes** | Fetch chronological task audit logs | `200` |
+| Route Category | Method | Path | Auth? | Required Role | Description | Success Code |
+| :--- | :---: | :--- | :---: | :---: | :--- | :---: |
+| **Authentication** | `POST` | `/api/auth/register` | No | *Any* | Create a new user profile & return token | `201` |
+| **Authentication** | `POST` | `/api/auth/login` | No | *Any* | Authenticate user & return token | `200` |
+| **User Profile** | `GET` | `/api/users/me` | **Yes** | *Any* | Fetch current logged-in user profile | `200` |
+| **Tasks** | `GET` | `/api/tasks` | **Yes** | *Any* | Retrieve all active tasks | `200` |
+| **Tasks** | `POST` | `/api/tasks` | **Yes** | *Any* | Create a task (starts as `to_do`) | `201` |
+| **Tasks** | `PUT` | `/api/tasks/:id/status`| **Yes** | *Any* | Transition task status | `200` |
+| **Tasks** | `DELETE` | `/api/tasks/:id` | **Yes** | *Any* | Delete a task (audit logs remain) | `200` |
+| **Tasks** | `GET` | `/api/tasks/:id/audit-logs`| **Yes** | *Any* | Fetch chronological task audit logs | `200` |
+| **Tasks** | `GET` | `/api/tasks/global-audit-logs`| **Yes** | **ADMIN** | Fetch **all** audit logs in the system | `200` |
 
 ---
 
@@ -65,8 +68,6 @@ Authorization: Bearer <your_jwt_token_here>
 ### 1. Authentication
 
 #### `POST /api/auth/register`
-Registers a new user and generates a session token.
-
 *   **Request Body**:
     ```json
     {
@@ -83,7 +84,8 @@ Registers a new user and generates a session token.
       "data": {
         "user": {
           "id": 1,
-          "username": "johndoe"
+          "username": "johndoe",
+          "role": "USER"
         },
         "token": "eyJhbGciOiJIUzI1NiIsIn..."
       }
@@ -91,8 +93,6 @@ Registers a new user and generates a session token.
     ```
 
 #### `POST /api/auth/login`
-Authenticates credentials and returns a session token.
-
 *   **Request Body**:
     ```json
     {
@@ -109,7 +109,8 @@ Authenticates credentials and returns a session token.
       "data": {
         "user": {
           "id": 1,
-          "username": "johndoe"
+          "username": "johndoe",
+          "role": "USER"
         },
         "token": "eyJhbGciOiJIUzI1NiIsIn..."
       }
@@ -175,7 +176,6 @@ Authenticates credentials and returns a session token.
       "status": "pending"
     }
     ```
-    *(Note: `actor` is extracted by the backend from the JWT bearer token, securing the audit log).*
 *   **Success Response (200 OK - Successful Transition)**:
     ```json
     {
@@ -191,16 +191,6 @@ Authenticates credentials and returns a session token.
       }
     }
     ```
-*   **Errors**:
-    *   `400 Bad Request` — Invalid state transition (e.g. `to_do` $\rightarrow$ `in_progress`).
-        ```json
-        {
-          "success": false,
-          "code": 400,
-          "message": "Invalid status transition from 'to_do' to 'in_progress'. Status must transition in sequence: to_do -> pending -> in_progress -> done.",
-          "data": null
-        }
-        ```
 
 #### `DELETE /api/tasks/:id`
 *   **Headers**: `Authorization: Bearer <token>`
@@ -233,16 +223,54 @@ Authenticates credentials and returns a session token.
           "old_status": null,
           "new_status": "to_do",
           "changed_at": "2026-06-19T03:30:00.000Z"
-        },
-        {
-          "id": 11,
-          "task_id": 3,
-          "task_title": "Setup Server Logs",
-          "actor": "johndoe",
-          "old_status": "to_do",
-          "new_status": "pending",
-          "changed_at": "2026-06-19T03:40:00.000Z"
         }
       ]
     }
     ```
+
+---
+
+### 3. Admin Audits
+
+#### `GET /api/tasks/global-audit-logs`
+Retrieves a global stream of all status changes across the entire system.
+
+*   **Headers**: `Authorization: Bearer <token>` *(Token must have role set to `ADMIN`)*
+*   **Success Response (200 OK)**:
+    ```json
+    {
+      "success": true,
+      "code": 200,
+      "message": "Global audit logs retrieved successfully.",
+      "data": [
+        {
+          "id": 10,
+          "task_id": 3,
+          "task_title": "Setup Server Logs",
+          "actor": "johndoe",
+          "old_status": null,
+          "new_status": "to_do",
+          "changed_at": "2026-06-19T03:30:00.000Z"
+        },
+        {
+          "id": 11,
+          "task_id": 1,
+          "task_title": "Prepare Invoice",
+          "actor": "adminuser",
+          "old_status": "pending",
+          "new_status": "in_progress",
+          "changed_at": "2026-06-19T03:35:00.000Z"
+        }
+      ]
+    }
+    ```
+*   **Errors**:
+    *   `403 Forbidden` — Token verified but user lacks `ADMIN` privileges.
+        ```json
+        {
+          "success": false,
+          "code": 403,
+          "message": "Forbidden. This resource requires administrator privileges.",
+          "data": null
+        }
+        ```

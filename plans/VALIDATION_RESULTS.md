@@ -10,13 +10,16 @@ This document lists the validation rules and verification checkpoints for the **
 | :--- | :--- | :--- | :--- |
 | **Authentication** | Secure registration & login via username and password | `auth.routes.ts` | `login-form.tsx`, `register-form.tsx` |
 | **Authentication** | JWT-based session authorization for API queries | `auth.middleware.ts` | `api.ts`, `auth-context.tsx` |
+| **Role Management** | User roles (`USER` and `ADMIN`) specified in JWT token | `auth.controller.ts` | `auth-context.tsx` |
+| **Role Management** | Global Audit Logs fetch blocked for standard users (returns `403 Forbidden`) | `auth.middleware.ts` | `use-tasks.ts` |
+| **Role Management** | Global Audit Logs fetch permitted for administrators | `auth.middleware.ts` | `global-audit-logs.tsx` |
 | **Task Management** | Create a task (Title + Description), status initialized as `to_do` | `task.service.ts` | `task-dialog.tsx` |
 | **Task Management** | List all active tasks on dashboard | `task.controller.ts` | `page.tsx` |
 | **Task Management** | Transition status through strictly sequential path | `task.service.ts` | `task-card.tsx` |
 | **Task Management** | Delete a task | `task.repository.ts` | `task-card.tsx` |
 | **Audit Logging** | Create an audit log record on status updates | `task.service.ts` | *N/A (triggered via API)* |
-| **Audit Logging** | Display logs in sorted chronological order | `task.repository.ts` | `task-audit-logs.tsx` |
-| **Audit Logging** | Log must track: task identifier, actor, old status, new status, timestamp | `task.repository.ts` | `task-audit-logs.tsx` |
+| **Audit Logging** | Display logs in sorted chronological order | `task.repository.ts` | `task-audit-logs.tsx`, `global-audit-logs.tsx` |
+| **Audit Logging** | Log must track: task identifier, actor, old status, new status, timestamp | `task.repository.ts` | `task-audit-logs.tsx`, `global-audit-logs.tsx` |
 | **Audit Logging** | Immutability: Deleting a task does NOT delete its audit logs | `schema.sql` (set null) | *N/A* |
 | **Non-Functional** | Idempotency: Same-status updates do not generate logs | `task.service.ts` | *N/A* |
 | **Non-Functional** | Consistency: Transactional updates of tasks and audit logs | `task.repository.ts` | *N/A* |
@@ -49,5 +52,6 @@ This document lists the validation rules and verification checkpoints for the **
 2.  **Audit Integrity**:
     *   Logs must be completely read-only (no update/delete routes exposed).
     *   Task deletion maps to `ON DELETE SET NULL` on the audit logs foreign key constraint, keeping historical actor records intact.
-3.  **Concurrency Safety**:
+3.  **Concurrency & Security Safety**:
     *   Backend employs `SELECT ... FOR UPDATE` within transactions, preventing race conditions where multiple users try to transition a task concurrently.
+    *   Backend validates user identity and checks for `role === 'ADMIN'` before executing global log requests, returning a `403 Forbidden` response in case of mismatch.

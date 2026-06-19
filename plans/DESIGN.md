@@ -11,6 +11,7 @@ To provide a premium internal dashboard that minimizes operational mistakes and 
 2.  **Status Visual Clarity**: Clear color distinctions for each task state so columns or statuses are readable at a distance.
 3.  **Contextual Actions**: Disable or hide buttons that would result in invalid state transitions, guiding users along the sequential path.
 4.  **Visible Audit History**: Enable quick access to chronological logs (per task) via clean modal windows with glassmorphic overlays.
+5.  **Role-Based UI Control**: Conditionally render administrative tools (e.g. "Global Logs" dashboard button) only if the user has the `ADMIN` role.
 
 ---
 
@@ -56,32 +57,27 @@ We define a custom theme in `src/app/globals.css` using Tailwind v4's CSS-first 
 
 ### A. Auth Layout (Login / Register)
 *   A centered card layout with a dark glass backdrop blur (`backdrop-blur-md bg-card-surface border border-card-border`).
-*   Form inputs for Username and Password with clean outline focus indicators.
-*   Clear links to toggle between Login and Registration views.
+*   Form inputs for Username and Password with clean focus outlines.
 
 ### B. Dashboard Layout
 *   **Header**:
-    *   Left side: App name/logo.
-    *   Right side: Logged-in user's username, accompanied by a premium outline "Logout" button.
+    *   Left side: App logo + Title.
+    *   Right side: Pre-labeled badge displaying role (e.g. `User` or `Admin`), user's username, and a "Logout" button.
+    *   **Admin-only link**: If authenticated as `ADMIN`, display a prominent "Global Logs" button/icon in the header navigation.
 *   **Grid (Screens >= 1024px)**:
     *   A 4-column Kanban board layout where each column represents a status:
         $$\text{To Do} \rightarrow \text{Pending} \rightarrow \text{In Progress} \rightarrow \text{Done}$$
-    *   Transition action buttons on each task card guide the user to make valid sequence progressions.
 
 ---
 
 ## 5. UI Component Specifications
 
 We use lightweight custom components built on Radix UI primitives:
-*   **Task Card**: Integrates glassmorphism, displaying:
-    *   Task Title & Description.
-    *   Status badge with matching status-color.
-    *   Next-state transition button (e.g. "Move to Pending" if status is `to_do`).
-    *   "View History" button showing the log icon.
-    *   "Delete" button for cleanup.
+*   **Task Card**: Displays title, description, status badge, sequential action buttons, delete triggers, and a "View Task logs" icon.
 *   **Audit Log Modal**: Centered popover dialog using `@radix-ui/react-dialog` displaying:
     *   A header indicating: "Audit Logs for: [Task Title]"
-    *   A vertical timeline list of logs, sorted chronologically (showing: *Actor* transitioned task from *Old Status* to *New Status* at *Timestamp*).
+    *   A vertical timeline list of logs, sorted chronologically.
+*   **Admin Global Logs Panel**: A dedicated full-screen drawer or modal accessible only to `ADMIN` users displaying a scrolling table/feed of all audit logs across all users, sorted with the latest transitions showing first.
 
 ---
 
@@ -89,4 +85,4 @@ We use lightweight custom components built on Radix UI primitives:
 
 *   **State Transition Pulse**: Successfully clicking a transition button triggers a brief color pulse before updating the card columns.
 *   **Card Hover Expansion**: Task cards hover-elevate by `scale-[1.015]` and borders brighten slightly (`hover:border-white/10`) to indicate interactivity.
-*   **Auth Input Highlight**: Input fields feature a smooth border transition (`transition-colors duration-200 focus:border-sky-500`) when focused.
+*   **Role Highlight**: The `ADMIN` badge in the header flashes a subtle glow animation on initial mount to emphasize administration privileges.
