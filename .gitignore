@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Next.js Build Outputs
+.next/
+out/
+build/
+dist/
+
+# Logs and Debugs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Database & Volume persistence
+db-data/
+mysql-data/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Documents (Testing spec)
+*.pdf
