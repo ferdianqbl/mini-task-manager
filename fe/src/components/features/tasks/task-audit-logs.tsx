@@ -1,6 +1,6 @@
 "use client";
 
-import { TaskStatus } from "@/services/task/types";
+import { AuditLog, TaskStatus } from "@/services/task/types";
 import { useTaskAuditLogs } from "@/services/task/use-tasks";
 import { ArrowRight, Calendar, User, X } from "lucide-react";
 
@@ -88,7 +88,7 @@ export default function TaskAuditLogs({
           </div>
         ) : (
           <div className="relative border-l-2 border-border ml-3 pl-6 space-y-8">
-            {logs.map((log) => {
+            {(logs as AuditLog[]).map((log) => {
               const isCreation = log.old_status === null;
               return (
                 <div key={log.id} className="relative">

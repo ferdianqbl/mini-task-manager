@@ -1,6 +1,6 @@
 "use client";
 
-import { TaskStatus } from "@/services/task/types";
+import { AuditLog, TaskStatus } from "@/services/task/types";
 import { useGlobalAuditLogs } from "@/services/task/use-tasks";
 import {
   AlertCircle,
@@ -47,7 +47,7 @@ export default function GlobalAuditLogs() {
     });
   };
 
-  const filteredLogs = logs?.filter((log) => {
+  const filteredLogs = (logs as AuditLog[])?.filter((log) => {
     const term = searchTerm.toLowerCase();
     return (
       log.task_title.toLowerCase().includes(term) ||
